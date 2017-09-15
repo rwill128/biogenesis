@@ -16,6 +16,16 @@
  *
  */
 
+import com.github.davidmoten.rtree.RTree;
+import com.github.davidmoten.rtree.fbs.generated.Geometry_;
+import com.github.davidmoten.rtree.geometry.Geometries;
+import com.github.davidmoten.rtree.geometry.Geometry;
+import com.github.davidmoten.rtree.geometry.Point;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.index.kdtree.KdNode;
+import com.vividsolutions.jts.index.kdtree.KdTree;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -449,6 +459,7 @@ public class World implements Serializable{
 	 * and every 256 frames the time counter is increased by 1.
 	 */
 	public void time() {
+	    isNewFrame = true;
 		int i;
 		Organism b;
 		InCorridor c;
@@ -544,20 +555,34 @@ public class World implements Serializable{
 	 * 
 	 * @param b1  The organism that is being checked.
 	 * @return  The organism which bounding rectangle is touching the bounding
-	 * rectangle of {@code b1} or null if there is no such organism. 
+	 * rectangle of {@code b1} or null if there is no such organism.
 	 */
+
+	public KdTree colDetTree = new KdTree();
+	public boolean isNewFrame = true;
+
 	public Organism fastCheckHit(Organism b1) {
-		Organism b;
-		synchronized (_organisms) {
-			for (Iterator<Organism> it = _organisms.iterator(); it.hasNext(); ) { 
-				b = it.next();
-				if (b1 != b) {
-					if (b1.intersects(b)) {
-						return b1;
-					}
-				}
-			}
-		}
+
+	    if (isNewFrame) {
+	        colDetTree = new KdTree(1);
+	        for (Organism o: _organisms) {
+	            colDetTree.insert(new Coordinate(o.getX(), o.getY()), o);
+	            colDetTree.insert(new Coordinate(o.getX(), o.getMaxY()), o);
+	            colDetTree.insert(new Coordinate(o.getMaxX(), o.getY()), o);
+	            colDetTree.insert(new Coordinate(o.getMaxX(), o.getMaxY()), o);
+            }
+            isNewFrame = false;
+        }
+
+        List collidingOrgs = colDetTree.query(new Envelope(b1.getX(), b1.getMaxX(), b1.getY(), b1.getMaxY()));
+
+	    for (Object orgObj : collidingOrgs) {
+	        Organism org = (Organism) ((KdNode) orgObj).getData();
+	        if (org != b1) {
+	            return b1;
+            }
+        }
+
 		return null;
 	}
 	/**

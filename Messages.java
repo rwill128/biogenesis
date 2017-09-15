@@ -31,7 +31,7 @@ public class Messages {
 	/**
 	 * The root name of files containing localized messages.
 	 */
-	private static final String BUNDLE_NAME = "biogenesis/messages/messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "messages/messages"; //$NON-NLS-1$
 	/**
 	 * The selected locale to be used.
 	 */

@@ -1522,158 +1522,7 @@ public class Organism extends Rectangle {
 	private final void touchEffects(Organism org, int seg, int oseg, boolean firstCall) {
 		double takenEnergy = 0;
 		int i;
-		switch (getTypeColor(_segColor[seg])) {
-		case DARK:
-			// Dark segment: Mimic other segments
-			switch (getTypeColor(org._segColor[oseg])) {
-			case DARK:
-			case BROKEN:
-			case POISONEDJADE:
-			case DARKFIRE:
-			case LIGHTBROWN:
-			case GREENBROWN:
-			case LIGHT_BLUE:
-			case ICE:
-			case DEADBARK:
-			case BROWN:
-				break;
-			default:
-				if (_geneticCode.getMimicAll()) {
-					for (int x = 0; x < _segments; x++) {
-						switch (getTypeColor(_segColor[x])) {
-						case DARK:
-							if (useEnergy(Utils.DARK_ENERGY_CONSUMPTION)) {
-								if (org._segColor[oseg] == Utils.ColorOLDBARK) {
-									_segColor[x] = Utils.ColorBARK;
-								} else {
-								    _segColor[x] = org._segColor[oseg];
-								}
-							    _segredReaction[x] = org._segredReaction[oseg];
-							    _seggreenReaction[x] = org._seggreenReaction[oseg];
-							    _segblueReaction[x] = org._segblueReaction[oseg];
-							    _segplagueReaction[x] = org._segplagueReaction[oseg];
-							    _segwhiteReaction[x] = org._segwhiteReaction[oseg];
-							    _seggrayReaction[x] = org._seggrayReaction[oseg];
-							    _segdefaultReaction[x] = org._segdefaultReaction[oseg];
-							    _segmagentaReaction[x] = org._segmagentaReaction[oseg];
-							    _segpinkReaction[x] = org._segpinkReaction[oseg];
-							    _segcoralReaction[x] = org._segcoralReaction[oseg];
-							    _segorangeReaction[x] = org._segorangeReaction[oseg];
-							    _segbarkReaction[x] = org._segbarkReaction[oseg];
-							    _segvioletReaction[x] = org._segvioletReaction[oseg];
-							    _segvirusReaction[x] = org._segvirusReaction[oseg];
-							    _segmaroonReaction[x] = org._segmaroonReaction[oseg];
-							    _segoliveReaction[x] = org._segoliveReaction[oseg];
-							    _segmintReaction[x] = org._segmintReaction[oseg];
-							    _segcreamReaction[x] = org._segcreamReaction[oseg];
-							    _segspikeReaction[x] = org._segspikeReaction[oseg];
-							    _segspikepointReaction[x] = org._segspikepointReaction[oseg];
-							    _seglightblueReaction[x] = org._seglightblueReaction[oseg];
-							    _segochreReaction[x] = org._segochreReaction[oseg];
-							    _segskyReaction[x] = org._segskyReaction[oseg];
-							    _seglilacReaction[x] = org._seglilacReaction[oseg];
-							    _segsilverReaction[x] = org._segsilverReaction[oseg];
-							    _segfireReaction[x] = org._segfireReaction[oseg];
-							    _seglightbrownReaction[x] = org._seglightbrownReaction[oseg];
-							    _seggreenbrownReaction[x] = org._seggreenbrownReaction[oseg];
-							    _segbrownReaction[x] = org._segbrownReaction[oseg];
-							    _segiceReaction[x] = org._segiceReaction[oseg];
-							    _segsickReaction[x] = org._segsickReaction[oseg];
-							    _segfriendReaction[x] = org._segfriendReaction[oseg];
-							}
-						}
-					}
-				} else {										
-				if (useEnergy(Utils.DARK_ENERGY_CONSUMPTION)) {
-					if (org._segColor[oseg] == Utils.ColorOLDBARK) {
-						_segColor[seg] = Utils.ColorBARK;
-					} else {
-					    _segColor[seg] = org._segColor[oseg];
-					}
-				    _segredReaction[seg] = org._segredReaction[oseg];
-				    _seggreenReaction[seg] = org._seggreenReaction[oseg];
-				    _segblueReaction[seg] = org._segblueReaction[oseg];
-				    _segplagueReaction[seg] = org._segplagueReaction[oseg];
-				    _segwhiteReaction[seg] = org._segwhiteReaction[oseg];
-				    _seggrayReaction[seg] = org._seggrayReaction[oseg];
-				    _segdefaultReaction[seg] = org._segdefaultReaction[oseg];
-				    _segmagentaReaction[seg] = org._segmagentaReaction[oseg];
-				    _segpinkReaction[seg] = org._segpinkReaction[oseg];
-				    _segcoralReaction[seg] = org._segcoralReaction[oseg];
-				    _segorangeReaction[seg] = org._segorangeReaction[oseg];
-				    _segbarkReaction[seg] = org._segbarkReaction[oseg];
-				    _segvioletReaction[seg] = org._segvioletReaction[oseg];
-				    _segvirusReaction[seg] = org._segvirusReaction[oseg];
-				    _segmaroonReaction[seg] = org._segmaroonReaction[oseg];
-				    _segoliveReaction[seg] = org._segoliveReaction[oseg];
-				    _segmintReaction[seg] = org._segmintReaction[oseg];
-				    _segcreamReaction[seg] = org._segcreamReaction[oseg];
-				    _segspikeReaction[seg] = org._segspikeReaction[oseg];
-				    _segspikepointReaction[seg] = org._segspikepointReaction[oseg];
-				    _seglightblueReaction[seg] = org._seglightblueReaction[oseg];
-				    _segochreReaction[seg] = org._segochreReaction[oseg];
-				    _segskyReaction[seg] = org._segskyReaction[oseg];
-				    _seglilacReaction[seg] = org._seglilacReaction[oseg];
-				    _segsilverReaction[seg] = org._segsilverReaction[oseg];
-				    _segfireReaction[seg] = org._segfireReaction[oseg];
-				    _seglightbrownReaction[seg] = org._seglightbrownReaction[oseg];
-				    _seggreenbrownReaction[seg] = org._seggreenbrownReaction[oseg];
-				    _segbrownReaction[seg] = org._segbrownReaction[oseg];
-				    _segiceReaction[seg] = org._segiceReaction[oseg];
-				    _segsickReaction[seg] = org._segsickReaction[oseg];
-				    _segfriendReaction[seg] = org._segfriendReaction[oseg];
-				  }
-				}
-			}
-			break;
-		case SPIKE:
-			// Spike segment: Hurts organisms, if it hits with its end point
-			switch (getTypeColor(org._segColor[oseg])) {
-			default:
-				ExLine2DDouble line = new ExLine2DDouble();
-				ExLine2DDouble bline = new ExLine2DDouble();
-				// Check collisions for all segments 
-				line.setLine(x1[seg] + _centerX, y1[seg] + _centerY, x2[seg] + _centerX, y2[seg] + _centerY);
-				bline.setLine(org.x1[oseg] + org._centerX, org.y1[oseg] + org._centerY, org.x2[oseg] + org._centerX, org.y2[oseg] + org._centerY);
-				if (intersectsLine(bline) && line.intersectsLine(bline)) {
-					// Intersection point
-					Point2D.Double intersec= line.getIntersection(bline);
-					double dl1, dl2, dbl1, dbl2;
-					dl1 = intersec.distanceSq(line.getP1());
-					dl2 = intersec.distanceSq(line.getP2());
-					dbl1 = intersec.distanceSq(bline.getP1());
-					dbl2 = intersec.distanceSq(bline.getP2());
-					if (Math.min(dl1, dl2) < Math.min(dbl1, dbl2)) {
-					    _segColor[seg] = Utils.ColorSPIKEPOINT;
-					}
-				}
-			}
-			break;
-		default:
-			// Spike segment: Hurts organisms, if it hits with its end point
-			switch (getTypeColor(org._segColor[oseg])) {
-			case SPIKE:
-				ExLine2DDouble line = new ExLine2DDouble();
-				ExLine2DDouble bline = new ExLine2DDouble();
-				// Check collisions for all segments 
-				line.setLine(x1[seg] + _centerX, y1[seg] + _centerY, x2[seg] + _centerX, y2[seg] + _centerY);
-				bline.setLine(org.x1[oseg] + org._centerX, org.y1[oseg] + org._centerY, org.x2[oseg] + org._centerX, org.y2[oseg] + org._centerY);
-				if (intersectsLine(bline) && line.intersectsLine(bline)) {
-					// Intersection point
-					Point2D.Double intersec= line.getIntersection(bline);
-					double dl1, dl2, dbl1, dbl2;
-					dl1 = intersec.distanceSq(line.getP1());
-					dl2 = intersec.distanceSq(line.getP2());
-					dbl1 = intersec.distanceSq(bline.getP1());
-					dbl2 = intersec.distanceSq(bline.getP2());
-					if (Math.min(dl1, dl2) < Math.min(dbl1, dbl2)) {
-						break;
-					} else {
-					    org._segColor[oseg] = Utils.ColorSPIKEPOINT;
-					}
-				}
-			}
-		}
+		handleMySegment(org, seg, oseg);
 		if ((((_parentID == org._ID || _ID == org._parentID) && !_geneticCode.getGenerationBattle() && !org._geneticCode.getGenerationBattle()) ||
 			(_parentID == org._parentID && !_geneticCode.getSiblingBattle() && !org._geneticCode.getSiblingBattle() && _parentID != -1 ) ||
 			(_transfersenergy && org._transfersenergy && ((_geneticCode.getPeaceful() && org._geneticCode.getPeaceful()) ||
@@ -3777,170 +3626,8 @@ public class Organism extends Rectangle {
 				break;
 		case CREAM:
 			// Cream segment: Parasitize on other organisms
-			    switch (getTypeColor(org._segColor[oseg])) {
-			    case GREEN:
-				case FOREST:
-				case SPRING:
-				case LIME:
-				case C4:
-				case JADE:
-				case GRASS:
-				case TEAL:
-				case CYAN:
-				case YELLOW:
-				case AUBURN:
-				case INDIGO:
-				case BLOND:
-				case DARKGRAY:
-				case GOLD:
-					if ((org._dodge) && (!org._isaconsumer) && (org._isakiller == 0) && (org.useEnergy(Utils.DODGE_ENERGY_CONSUMPTION))) {
-						org.setColor(Utils.ColorTEAL);
-						setColor(Utils.ColorCREAM);
-					} else {
-						if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
-							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-							// The other organism will be shown in green brown
-							org.setColor(Utils.ColorGREENBROWN);
-							// This organism will be shown in cream
-							setColor(Utils.ColorCREAM);
-						}
-					}
-					break;
-			    case BLUE:
-			    	if (((!_isenhanced) || (_geneticCode.getModifiescream())) && (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION))) {
-			    		if (org._isenhanced) {
-						    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
-							setColor(Utils.ColorDARKLILAC);
-						} else {
-							setColor(Utils.ColorCREAM);
-						}
-						org.setColor(Color.BLUE);
-					} else {
-						if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
-							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-							// The other organism will be shown in green brown
-							org.setColor(Utils.ColorGREENBROWN);
-							if ((_isenhanced) && (!_geneticCode.getModifiescream())) {
-							    // This organism will be shown in dark gray
-							    setColor(Color.DARK_GRAY);
-							} else {
-								// This organism will be shown in cream
-								setColor(Utils.ColorCREAM);
-							}
-						}
-					}
-				    break;
-			    case SKY:
-			    case DEEPSKY:
-			    case OLDBARK:
-			    	if ((_isenhanced) && (!_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
-						// Get energy depending on segment length
-			    		takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-			    		// The other organism will be shown in green brown
-						org.setColor(Utils.ColorGREENBROWN);
-						// This organism will be shown in dark gray
-						setColor(Color.DARK_GRAY);
-					}
-				    break;
-			    case BARK:
-			    	org._segColor[oseg] = Utils.ColorOLDBARK;
-			    	if ((_isenhanced) && (!_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
-						// Get energy depending on segment length
-			    		takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-			    		// The other organism will be shown in green brown
-						org.setColor(Utils.ColorGREENBROWN);
-						// This organism will be shown in dark gray
-						setColor(Color.DARK_GRAY);
-					}
-			    	break;
-			    case SILVER:
-					if ((org._nTotalKills > 0) || (org._isenhanced)) {
-						if ((_isenhanced) && (_geneticCode.getModifiescream()) && (_nTotalKills >= org._nTotalKills) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
-							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-							// The other organism will be shown in green brown
-							org.setColor(Utils.ColorGREENBROWN);
-							// This organism will be shown in dark gray
-							setColor(Color.DARK_GRAY);
-						}
-					} else {
-						if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
-							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-							// The other organism will be shown in green brown
-							org.setColor(Utils.ColorGREENBROWN);
-							// This organism will be shown in cream
-							setColor(Utils.ColorCREAM);
-						}
-					}
-					break;
-				case RED:
-				case FIRE:
-				case ORANGE:
-				case MAROON:
-				case PINK:
-					if ((_isenhanced) && (_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
-						// Get energy depending on segment length
-						takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-						// The other organism will be shown in green brown
-						org.setColor(Utils.ColorGREENBROWN);
-						// This organism will be shown in dark gray
-						setColor(Color.DARK_GRAY);
-					}
-				    break;
-				case WHITE:
-					if ((org._isaplant) || (org._isaconsumer) || (org._isplague) || (org._isenhanced) || (org._isfrozen)) {
-						if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
-						    // Get energy depending on segment length
-							takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-							// The other organism will be shown in green brown
-							org.setColor(Utils.ColorGREENBROWN);
-							// This organism will be shown in cream
-							setColor(Utils.ColorCREAM);
-						}
-					}
-				    break;
-			    case MAGENTA:
-			    case ROSE:
-					if (_geneticCode.getAltruist()) {
-	                break;
-					} else {
-						if ((org._dodge) && (!org._isaconsumer) && (org._isakiller == 0) && (org.useEnergy(Utils.DODGE_ENERGY_CONSUMPTION))) {
-							org.setColor(Utils.ColorTEAL);
-							setColor(Utils.ColorCREAM);
-						} else {
-							if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
-								// Get energy depending on segment length
-								takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-								// The other organism will be shown in green brown
-								org.setColor(Utils.ColorGREENBROWN);
-								// This organism will be shown in cream
-								setColor(Utils.ColorCREAM);
-							}
-						}
-					}
-					break;
-				case CREAM:
-				    break;
-				case MINT:
-					break;
-				case SPIKEPOINT:
-					break;
-				case BROWN:
-					break;
-				default:
-					if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
-						// Get energy depending on segment length
-						takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
-						// The other organism will be shown in green brown
-						org.setColor(Utils.ColorGREENBROWN);
-						// This organism will be shown in cream
-						setColor(Utils.ColorCREAM);
-					}
-				}
-				// energy interchange
+			takenEnergy = handleCream(org, seg, oseg, takenEnergy);
+			// energy interchange
 				org._energy -= takenEnergy;
 				_energy += takenEnergy;
 				double CO2freed5 = takenEnergy * Utils.CREAM_ORGANIC_SUBS_PRODUCED;
@@ -7043,7 +6730,329 @@ public class Organism extends Rectangle {
 		if (firstCall)
 			org.touchEffects(this, oseg, seg, false);
 	}
-	
+
+	private double handleCream(Organism org, int seg, int oseg, double takenEnergy) {
+		switch (getTypeColor(org._segColor[oseg])) {
+        case GREEN:
+        case FOREST:
+        case SPRING:
+        case LIME:
+        case C4:
+        case JADE:
+        case GRASS:
+        case TEAL:
+        case CYAN:
+        case YELLOW:
+        case AUBURN:
+        case INDIGO:
+        case BLOND:
+        case DARKGRAY:
+        case GOLD:
+            if ((org._dodge) && (!org._isaconsumer) && (org._isakiller == 0) && (org.useEnergy(Utils.DODGE_ENERGY_CONSUMPTION))) {
+                org.setColor(Utils.ColorTEAL);
+                setColor(Utils.ColorCREAM);
+            } else {
+                if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
+                    // Get energy depending on segment length
+                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    // The other organism will be shown in green brown
+                    org.setColor(Utils.ColorGREENBROWN);
+                    // This organism will be shown in cream
+                    setColor(Utils.ColorCREAM);
+                }
+            }
+            break;
+        case BLUE:
+            if (((!_isenhanced) || (_geneticCode.getModifiescream())) && (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION))) {
+                if (org._isenhanced) {
+                    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+                    setColor(Utils.ColorDARKLILAC);
+                } else {
+                    setColor(Utils.ColorCREAM);
+                }
+                org.setColor(Color.BLUE);
+            } else {
+                if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
+                    // Get energy depending on segment length
+                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    // The other organism will be shown in green brown
+                    org.setColor(Utils.ColorGREENBROWN);
+                    if ((_isenhanced) && (!_geneticCode.getModifiescream())) {
+                        // This organism will be shown in dark gray
+                        setColor(Color.DARK_GRAY);
+                    } else {
+                        // This organism will be shown in cream
+                        setColor(Utils.ColorCREAM);
+                    }
+                }
+            }
+            break;
+        case SKY:
+        case DEEPSKY:
+        case OLDBARK:
+            if ((_isenhanced) && (!_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
+                // Get energy depending on segment length
+                takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                // The other organism will be shown in green brown
+                org.setColor(Utils.ColorGREENBROWN);
+                // This organism will be shown in dark gray
+                setColor(Color.DARK_GRAY);
+            }
+            break;
+        case BARK:
+            org._segColor[oseg] = Utils.ColorOLDBARK;
+            if ((_isenhanced) && (!_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
+                // Get energy depending on segment length
+                takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                // The other organism will be shown in green brown
+                org.setColor(Utils.ColorGREENBROWN);
+                // This organism will be shown in dark gray
+                setColor(Color.DARK_GRAY);
+            }
+            break;
+        case SILVER:
+            if ((org._nTotalKills > 0) || (org._isenhanced)) {
+                if ((_isenhanced) && (_geneticCode.getModifiescream()) && (_nTotalKills >= org._nTotalKills) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
+                    // Get energy depending on segment length
+                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    // The other organism will be shown in green brown
+                    org.setColor(Utils.ColorGREENBROWN);
+                    // This organism will be shown in dark gray
+                    setColor(Color.DARK_GRAY);
+                }
+            } else {
+                if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
+                    // Get energy depending on segment length
+                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    // The other organism will be shown in green brown
+                    org.setColor(Utils.ColorGREENBROWN);
+                    // This organism will be shown in cream
+                    setColor(Utils.ColorCREAM);
+                }
+            }
+            break;
+        case RED:
+        case FIRE:
+        case ORANGE:
+        case MAROON:
+        case PINK:
+            if ((_isenhanced) && (_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
+                // Get energy depending on segment length
+                takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                // The other organism will be shown in green brown
+                org.setColor(Utils.ColorGREENBROWN);
+                // This organism will be shown in dark gray
+                setColor(Color.DARK_GRAY);
+            }
+            break;
+        case WHITE:
+            if ((org._isaplant) || (org._isaconsumer) || (org._isplague) || (org._isenhanced) || (org._isfrozen)) {
+                if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
+                    // Get energy depending on segment length
+                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    // The other organism will be shown in green brown
+                    org.setColor(Utils.ColorGREENBROWN);
+                    // This organism will be shown in cream
+                    setColor(Utils.ColorCREAM);
+                }
+            }
+            break;
+        case MAGENTA:
+        case ROSE:
+            if (_geneticCode.getAltruist()) {
+            break;
+            } else {
+                if ((org._dodge) && (!org._isaconsumer) && (org._isakiller == 0) && (org.useEnergy(Utils.DODGE_ENERGY_CONSUMPTION))) {
+                    org.setColor(Utils.ColorTEAL);
+                    setColor(Utils.ColorCREAM);
+                } else {
+                    if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
+                        // Get energy depending on segment length
+                        takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                        // The other organism will be shown in green brown
+                        org.setColor(Utils.ColorGREENBROWN);
+                        // This organism will be shown in cream
+                        setColor(Utils.ColorCREAM);
+                    }
+                }
+            }
+            break;
+        case CREAM:
+            break;
+        case MINT:
+            break;
+        case SPIKEPOINT:
+            break;
+        case BROWN:
+            break;
+        default:
+            if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
+                // Get energy depending on segment length
+                takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                // The other organism will be shown in green brown
+                org.setColor(Utils.ColorGREENBROWN);
+                // This organism will be shown in cream
+                setColor(Utils.ColorCREAM);
+            }
+        }
+		return takenEnergy;
+	}
+
+	private void handleMySegment(Organism org, int seg, int oseg) {
+		switch (getTypeColor(_segColor[seg])) {
+		case DARK:
+			// Dark segment: Mimic other segments
+			switch (getTypeColor(org._segColor[oseg])) {
+			case DARK:
+			case BROKEN:
+			case POISONEDJADE:
+			case DARKFIRE:
+			case LIGHTBROWN:
+			case GREENBROWN:
+			case LIGHT_BLUE:
+			case ICE:
+			case DEADBARK:
+			case BROWN:
+				break;
+			default:
+				if (_geneticCode.getMimicAll()) {
+					for (int x = 0; x < _segments; x++) {
+						switch (getTypeColor(_segColor[x])) {
+						case DARK:
+							if (useEnergy(Utils.DARK_ENERGY_CONSUMPTION)) {
+								if (org._segColor[oseg] == Utils.ColorOLDBARK) {
+									_segColor[x] = Utils.ColorBARK;
+								} else {
+								    _segColor[x] = org._segColor[oseg];
+								}
+							    _segredReaction[x] = org._segredReaction[oseg];
+							    _seggreenReaction[x] = org._seggreenReaction[oseg];
+							    _segblueReaction[x] = org._segblueReaction[oseg];
+							    _segplagueReaction[x] = org._segplagueReaction[oseg];
+							    _segwhiteReaction[x] = org._segwhiteReaction[oseg];
+							    _seggrayReaction[x] = org._seggrayReaction[oseg];
+							    _segdefaultReaction[x] = org._segdefaultReaction[oseg];
+							    _segmagentaReaction[x] = org._segmagentaReaction[oseg];
+							    _segpinkReaction[x] = org._segpinkReaction[oseg];
+							    _segcoralReaction[x] = org._segcoralReaction[oseg];
+							    _segorangeReaction[x] = org._segorangeReaction[oseg];
+							    _segbarkReaction[x] = org._segbarkReaction[oseg];
+							    _segvioletReaction[x] = org._segvioletReaction[oseg];
+							    _segvirusReaction[x] = org._segvirusReaction[oseg];
+							    _segmaroonReaction[x] = org._segmaroonReaction[oseg];
+							    _segoliveReaction[x] = org._segoliveReaction[oseg];
+							    _segmintReaction[x] = org._segmintReaction[oseg];
+							    _segcreamReaction[x] = org._segcreamReaction[oseg];
+							    _segspikeReaction[x] = org._segspikeReaction[oseg];
+							    _segspikepointReaction[x] = org._segspikepointReaction[oseg];
+							    _seglightblueReaction[x] = org._seglightblueReaction[oseg];
+							    _segochreReaction[x] = org._segochreReaction[oseg];
+							    _segskyReaction[x] = org._segskyReaction[oseg];
+							    _seglilacReaction[x] = org._seglilacReaction[oseg];
+							    _segsilverReaction[x] = org._segsilverReaction[oseg];
+							    _segfireReaction[x] = org._segfireReaction[oseg];
+							    _seglightbrownReaction[x] = org._seglightbrownReaction[oseg];
+							    _seggreenbrownReaction[x] = org._seggreenbrownReaction[oseg];
+							    _segbrownReaction[x] = org._segbrownReaction[oseg];
+							    _segiceReaction[x] = org._segiceReaction[oseg];
+							    _segsickReaction[x] = org._segsickReaction[oseg];
+							    _segfriendReaction[x] = org._segfriendReaction[oseg];
+							}
+						}
+					}
+				} else {
+				if (useEnergy(Utils.DARK_ENERGY_CONSUMPTION)) {
+					if (org._segColor[oseg] == Utils.ColorOLDBARK) {
+						_segColor[seg] = Utils.ColorBARK;
+					} else {
+					    _segColor[seg] = org._segColor[oseg];
+					}
+				    _segredReaction[seg] = org._segredReaction[oseg];
+				    _seggreenReaction[seg] = org._seggreenReaction[oseg];
+				    _segblueReaction[seg] = org._segblueReaction[oseg];
+				    _segplagueReaction[seg] = org._segplagueReaction[oseg];
+				    _segwhiteReaction[seg] = org._segwhiteReaction[oseg];
+				    _seggrayReaction[seg] = org._seggrayReaction[oseg];
+				    _segdefaultReaction[seg] = org._segdefaultReaction[oseg];
+				    _segmagentaReaction[seg] = org._segmagentaReaction[oseg];
+				    _segpinkReaction[seg] = org._segpinkReaction[oseg];
+				    _segcoralReaction[seg] = org._segcoralReaction[oseg];
+				    _segorangeReaction[seg] = org._segorangeReaction[oseg];
+				    _segbarkReaction[seg] = org._segbarkReaction[oseg];
+				    _segvioletReaction[seg] = org._segvioletReaction[oseg];
+				    _segvirusReaction[seg] = org._segvirusReaction[oseg];
+				    _segmaroonReaction[seg] = org._segmaroonReaction[oseg];
+				    _segoliveReaction[seg] = org._segoliveReaction[oseg];
+				    _segmintReaction[seg] = org._segmintReaction[oseg];
+				    _segcreamReaction[seg] = org._segcreamReaction[oseg];
+				    _segspikeReaction[seg] = org._segspikeReaction[oseg];
+				    _segspikepointReaction[seg] = org._segspikepointReaction[oseg];
+				    _seglightblueReaction[seg] = org._seglightblueReaction[oseg];
+				    _segochreReaction[seg] = org._segochreReaction[oseg];
+				    _segskyReaction[seg] = org._segskyReaction[oseg];
+				    _seglilacReaction[seg] = org._seglilacReaction[oseg];
+				    _segsilverReaction[seg] = org._segsilverReaction[oseg];
+				    _segfireReaction[seg] = org._segfireReaction[oseg];
+				    _seglightbrownReaction[seg] = org._seglightbrownReaction[oseg];
+				    _seggreenbrownReaction[seg] = org._seggreenbrownReaction[oseg];
+				    _segbrownReaction[seg] = org._segbrownReaction[oseg];
+				    _segiceReaction[seg] = org._segiceReaction[oseg];
+				    _segsickReaction[seg] = org._segsickReaction[oseg];
+				    _segfriendReaction[seg] = org._segfriendReaction[oseg];
+				  }
+				}
+			}
+			break;
+		case SPIKE:
+			// Spike segment: Hurts organisms, if it hits with its end point
+			switch (getTypeColor(org._segColor[oseg])) {
+			default:
+				ExLine2DDouble line = new ExLine2DDouble();
+				ExLine2DDouble bline = new ExLine2DDouble();
+				// Check collisions for all segments
+				line.setLine(x1[seg] + _centerX, y1[seg] + _centerY, x2[seg] + _centerX, y2[seg] + _centerY);
+				bline.setLine(org.x1[oseg] + org._centerX, org.y1[oseg] + org._centerY, org.x2[oseg] + org._centerX, org.y2[oseg] + org._centerY);
+				if (intersectsLine(bline) && line.intersectsLine(bline)) {
+					// Intersection point
+					Point2D.Double intersec= line.getIntersection(bline);
+					double dl1, dl2, dbl1, dbl2;
+					dl1 = intersec.distanceSq(line.getP1());
+					dl2 = intersec.distanceSq(line.getP2());
+					dbl1 = intersec.distanceSq(bline.getP1());
+					dbl2 = intersec.distanceSq(bline.getP2());
+					if (Math.min(dl1, dl2) < Math.min(dbl1, dbl2)) {
+					    _segColor[seg] = Utils.ColorSPIKEPOINT;
+					}
+				}
+			}
+			break;
+		default:
+			// Spike segment: Hurts organisms, if it hits with its end point
+			switch (getTypeColor(org._segColor[oseg])) {
+			case SPIKE:
+				ExLine2DDouble line = new ExLine2DDouble();
+				ExLine2DDouble bline = new ExLine2DDouble();
+				// Check collisions for all segments
+				line.setLine(x1[seg] + _centerX, y1[seg] + _centerY, x2[seg] + _centerX, y2[seg] + _centerY);
+				bline.setLine(org.x1[oseg] + org._centerX, org.y1[oseg] + org._centerY, org.x2[oseg] + org._centerX, org.y2[oseg] + org._centerY);
+				if (intersectsLine(bline) && line.intersectsLine(bline)) {
+					// Intersection point
+					Point2D.Double intersec= line.getIntersection(bline);
+					double dl1, dl2, dbl1, dbl2;
+					dl1 = intersec.distanceSq(line.getP1());
+					dl2 = intersec.distanceSq(line.getP2());
+					dbl1 = intersec.distanceSq(bline.getP1());
+					dbl2 = intersec.distanceSq(bline.getP2());
+					if (Math.min(dl1, dl2) < Math.min(dbl1, dbl2)) {
+						break;
+					} else {
+					    org._segColor[oseg] = Utils.ColorSPIKEPOINT;
+					}
+				}
+			}
+		}
+	}
+
 	/*
 	 * Perd velocitat pel fregament.
 	 */
