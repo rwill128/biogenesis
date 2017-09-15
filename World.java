@@ -593,20 +593,31 @@ public class World implements Serializable{
 	 * organism exists. 
 	 */
 	public Organism checkHit(Organism org1) {
-		Organism org;
-		synchronized(_organisms) {
-			for (Iterator<Organism> it = _organisms.iterator(); it.hasNext(); ) { 
-				org = it.next();
-				if (org1 != org) {
-					// First check if the bounding boxes intersect
-					if (org1.intersects(org)) {
-						// Check if they are touching
-						if (org1.contact(org))
-							return org1;
-					}
-				}
-			}
-		}
+
+        if (isNewFrame) {
+            colDetTree = new KdTree(1);
+            for (Organism o: _organisms) {
+                colDetTree.insert(new Coordinate(o.getX(), o.getY()), o);
+                colDetTree.insert(new Coordinate(o.getX(), o.getMaxY()), o);
+                colDetTree.insert(new Coordinate(o.getMaxX(), o.getY()), o);
+                colDetTree.insert(new Coordinate(o.getMaxX(), o.getMaxY()), o);
+            }
+            isNewFrame = false;
+        }
+
+        List collidingOrgs = colDetTree.query(new Envelope(org1.getX(), org1.getMaxX(), org1.getY(), org1.getMaxY()));
+
+        for (Object orgObj : collidingOrgs) {
+            Organism org = (Organism) ((KdNode) orgObj).getData();
+            if (org1 != org) {
+                // Check if they are touching
+                if (org1.intersects(org)) {
+                    if (org1.contact(org))
+                        return org1;
+                }
+            }
+        }
+
 		return null;
 	}
 	/**
