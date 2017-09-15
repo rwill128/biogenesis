@@ -25,6 +25,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.index.kdtree.KdNode;
 import com.vividsolutions.jts.index.kdtree.KdTree;
+import com.vividsolutions.jts.index.strtree.STRtree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -460,12 +461,9 @@ public class World implements Serializable{
 	 */
 	public void time() {
 
-	    colDetTree = new KdTree();
+	    colDetTree = new STRtree();
         for (Organism o: _organisms) {
-            colDetTree.insert(new Coordinate(o.getX(), o.getY()), o);
-            colDetTree.insert(new Coordinate(o.getX(), o.getMaxY()), o);
-            colDetTree.insert(new Coordinate(o.getMaxX(), o.getY()), o);
-            colDetTree.insert(new Coordinate(o.getMaxX(), o.getMaxY()), o);
+            colDetTree.insert(new Envelope(o.getX(), o.getMaxX(), o.getY(), o.getMaxY()), o);
         }
 
 		int i;
@@ -495,11 +493,6 @@ public class World implements Serializable{
 					l--;
 					i--;
 				}
-
-                colDetTree.insert(new Coordinate(b.getX(), b.getY()), b);
-                colDetTree.insert(new Coordinate(b.getX(), b.getMaxY()), b);
-                colDetTree.insert(new Coordinate(b.getMaxX(), b.getY()), b);
-                colDetTree.insert(new Coordinate(b.getMaxX(), b.getMaxY()), b);
 			}
 		}
 		if (nFrames++ % 20 == 0)
@@ -571,14 +564,13 @@ public class World implements Serializable{
 	 * rectangle of {@code b1} or null if there is no such organism.
 	 */
 
-	public KdTree colDetTree = new KdTree();
-	public boolean isNewFrame = true;
+	public STRtree colDetTree = new STRtree();
 
 	public Organism fastCheckHit(Organism b1) {
         List collidingOrgs = colDetTree.query(new Envelope(b1.getX(), b1.getMaxX(), b1.getY(), b1.getMaxY()));
 
 	    for (Object orgObj : collidingOrgs) {
-	        Organism org = (Organism) ((KdNode) orgObj).getData();
+	        Organism org = (Organism) orgObj;
 	        if (org != b1) {
 	            return b1;
             }
@@ -597,7 +589,7 @@ public class World implements Serializable{
         List collidingOrgs = colDetTree.query(new Envelope(org1.getX(), org1.getMaxX(), org1.getY(), org1.getMaxY()));
 
         for (Object orgObj : collidingOrgs) {
-            Organism org = (Organism) ((KdNode) orgObj).getData();
+            Organism org = (Organism) orgObj;
             if (org1 != org) {
                 // Check if they are touching
                 if (org1.intersects(org)) {
