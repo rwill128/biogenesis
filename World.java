@@ -459,7 +459,15 @@ public class World implements Serializable{
 	 * and every 256 frames the time counter is increased by 1.
 	 */
 	public void time() {
-	    isNewFrame = true;
+
+	    colDetTree = new KdTree();
+        for (Organism o: _organisms) {
+            colDetTree.insert(new Coordinate(o.getX(), o.getY()), o);
+            colDetTree.insert(new Coordinate(o.getX(), o.getMaxY()), o);
+            colDetTree.insert(new Coordinate(o.getMaxX(), o.getY()), o);
+            colDetTree.insert(new Coordinate(o.getMaxX(), o.getMaxY()), o);
+        }
+
 		int i;
 		Organism b;
 		InCorridor c;
@@ -487,6 +495,11 @@ public class World implements Serializable{
 					l--;
 					i--;
 				}
+
+                colDetTree.insert(new Coordinate(b.getX(), b.getY()), b);
+                colDetTree.insert(new Coordinate(b.getX(), b.getMaxY()), b);
+                colDetTree.insert(new Coordinate(b.getMaxX(), b.getY()), b);
+                colDetTree.insert(new Coordinate(b.getMaxX(), b.getMaxY()), b);
 			}
 		}
 		if (nFrames++ % 20 == 0)
@@ -562,18 +575,6 @@ public class World implements Serializable{
 	public boolean isNewFrame = true;
 
 	public Organism fastCheckHit(Organism b1) {
-
-	    if (isNewFrame) {
-	        colDetTree = new KdTree(1);
-	        for (Organism o: _organisms) {
-	            colDetTree.insert(new Coordinate(o.getX(), o.getY()), o);
-	            colDetTree.insert(new Coordinate(o.getX(), o.getMaxY()), o);
-	            colDetTree.insert(new Coordinate(o.getMaxX(), o.getY()), o);
-	            colDetTree.insert(new Coordinate(o.getMaxX(), o.getMaxY()), o);
-            }
-            isNewFrame = false;
-        }
-
         List collidingOrgs = colDetTree.query(new Envelope(b1.getX(), b1.getMaxX(), b1.getY(), b1.getMaxY()));
 
 	    for (Object orgObj : collidingOrgs) {
@@ -593,18 +594,6 @@ public class World implements Serializable{
 	 * organism exists. 
 	 */
 	public Organism checkHit(Organism org1) {
-
-        if (isNewFrame) {
-            colDetTree = new KdTree(1);
-            for (Organism o: _organisms) {
-                colDetTree.insert(new Coordinate(o.getX(), o.getY()), o);
-                colDetTree.insert(new Coordinate(o.getX(), o.getMaxY()), o);
-                colDetTree.insert(new Coordinate(o.getMaxX(), o.getY()), o);
-                colDetTree.insert(new Coordinate(o.getMaxX(), o.getMaxY()), o);
-            }
-            isNewFrame = false;
-        }
-
         List collidingOrgs = colDetTree.query(new Envelope(org1.getX(), org1.getMaxX(), org1.getY(), org1.getMaxY()));
 
         for (Object orgObj : collidingOrgs) {
