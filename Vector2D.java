@@ -16,6 +16,8 @@
  *
  */
 
+import net.jafama.FastMath;
+
 public class Vector2D {
 	protected double _modulus = 0;
 	protected double _theta = 0;
@@ -24,7 +26,7 @@ public class Vector2D {
 	}
 	
 	public double getX() {
-		return _modulus*Math.cos(_theta);
+		return _modulus* FastMath.cos(_theta);
 	}
 	
 	public void setPolar(double modulus, double theta) {
@@ -41,7 +43,7 @@ public class Vector2D {
 	}
 	
 	public double getY() {
-		return _modulus*Math.sin(_theta);
+		return _modulus*FastMath.sin(_theta);
 	}
 	
 	public double getModulus() {
@@ -57,10 +59,10 @@ public class Vector2D {
 	}
 	
 	public void invertX() {
-		_theta=Math.PI-_theta;
+		_theta=FastMath.PI-_theta;
 	}
 	
 	public void invertY() {
-		_theta=2.0*Math.PI-_theta;
+		_theta=2.0*FastMath.PI-_theta;
 	}
 }

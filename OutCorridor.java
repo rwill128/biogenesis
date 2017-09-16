@@ -16,6 +16,8 @@
  *
  */
 
+import net.jafama.FastMath;
+
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -52,7 +54,7 @@ public class OutCorridor extends Corridor {
 		if (travellingOrganism != null) {
 			if (travellingOrganism._growthRatio < 16) {
 				travellingOrganism._growthRatio++;
-				travellingOrganism._theta += Math.PI / 6;
+				travellingOrganism._theta += FastMath.PI / 6;
 				travellingOrganism.symmetric();
 				travellingOrganism.calculateBounds(true);
 				travellingOrganism.draw(g);

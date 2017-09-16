@@ -16,6 +16,8 @@
  *
  */
 
+import net.jafama.FastMath;
+
 import java.awt.Graphics;
 import java.awt.Rectangle;
 

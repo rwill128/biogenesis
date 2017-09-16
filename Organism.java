@@ -17,6 +17,8 @@
  *
  */
 
+import net.jafama.FastMath;
+
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.geom.*;
@@ -548,7 +550,7 @@ public class Organism extends Rectangle {
 	public Organism(World world) {
 		_world = world;
 		_visibleWorld = world._visibleWorld;
-		_theta = Utils.random.nextDouble() * Math.PI * 2d;
+		_theta = Utils.random.nextDouble() * FastMath.PI * 2d;
 	}
 	/**
 	 * Construct an organism with a given genetic code. Doesn't initialize it:
@@ -561,7 +563,7 @@ public class Organism extends Rectangle {
 	public Organism(World world, GeneticCode geneticCode) {
 		_world = world;
 		_visibleWorld = world._visibleWorld;
-		_theta = Utils.random.nextDouble() * Math.PI * 2d;
+		_theta = Utils.random.nextDouble() * FastMath.PI * 2d;
 		_geneticCode = geneticCode;
 	}
 	/**
@@ -873,9 +875,9 @@ public class Organism extends Rectangle {
 					_startPointX[segment] = 0;
 					_startPointY[segment] = 0;
 					if (mirror == 0 || i%2==0)
-						v.setTheta(_geneticCode.getGene(j).getTheta()+i*2*Math.PI/symmetry);
+						v.setTheta(_geneticCode.getGene(j).getTheta()+i*2*FastMath.PI/symmetry);
 					else {
-						v.setTheta(_geneticCode.getGene(j).getTheta()+(i-1)*2*Math.PI/symmetry);
+						v.setTheta(_geneticCode.getGene(j).getTheta()+(i-1)*2*FastMath.PI/symmetry);
 						v.invertX();
 					}
 				} else {
@@ -905,8 +907,8 @@ public class Organism extends Rectangle {
 					}
 				}
 				// Apply the vector to the starting point to get the ending point.
-				_endPointX[segment] = (int) Math.round(v.getX() + _startPointX[segment]);
-				_endPointY[segment] = (int) Math.round(v.getY() + _startPointY[segment]);
+				_endPointX[segment] = (int) FastMath.round(v.getX() + _startPointX[segment]);
+				_endPointY[segment] = (int) FastMath.round(v.getY() + _startPointY[segment]);
 			    // Calculate the bounding rectangle of this organism
 			    left = Math.min(left, _endPointX[segment]);
 			    right = Math.max(right, _endPointX[segment]);
@@ -927,10 +929,10 @@ public class Organism extends Rectangle {
 			_endPointX[i]-=centerX;
 			_endPointY[i]-=centerY;
 			// calculate points distance of the origin and modulus
-			_m1[i] = Math.sqrt(_startPointX[i]*_startPointX[i]+_startPointY[i]*_startPointY[i]);
-			_m2[i] = Math.sqrt(_endPointX[i]*_endPointX[i]+_endPointY[i]*_endPointY[i]);
-			_m[i] = Math.sqrt(Math.pow(_endPointX[i]-_startPointX[i],2) + 
-					Math.pow(_endPointY[i]-_startPointY[i],2));
+			_m1[i] = FastMath.sqrt(_startPointX[i]*_startPointX[i]+_startPointY[i]*_startPointY[i]);
+			_m2[i] = FastMath.sqrt(_endPointX[i]*_endPointX[i]+_endPointY[i]*_endPointY[i]);
+			_m[i] = FastMath.sqrt(FastMath.pow(_endPointX[i]-_startPointX[i],2) +
+                    FastMath.pow(_endPointY[i]-_startPointY[i],2));
 			_mass += _m[i];
 			_mphoto[i] = (0.6 + (0.48 / (double)sequence) + (1.44 / (double)symmetry)) * _m[i];
 			// calculate inertia moment
@@ -938,7 +940,7 @@ public class Organism extends Rectangle {
 			cx = (_startPointX[i] + _endPointX[i]) / 2d;
 			cy = (_startPointY[i] + _endPointY[i]) / 2d;
 			// add the effect of this segment, following the parallel axis theorem
-			_I += Math.pow(_m[i],3)/12d +
+			_I += FastMath.pow(_m[i],3)/12d +
 				_m[i] * cx*cx + cy*cy;// mass * length^2 (center is at 0,0)
 		}
 	}
@@ -1108,12 +1110,12 @@ public class Organism extends Rectangle {
 			 * don't calculate points again.
 			 */
 			if (_lastTheta != _theta || force) {
-				theta=_theta+Math.atan2(_startPointY[i] ,_startPointX[i]);
-				x1[i]=(int)(_m1[i]*Math.cos(theta));
-				y1[i]=(int)(_m1[i]*Math.sin(theta));
-				theta=_theta+Math.atan2(_endPointY[i], _endPointX[i]);
-				x2[i]=(int)(_m2[i]*Math.cos(theta));
-				y2[i]=(int)(_m2[i]*Math.sin(theta));
+				theta=_theta+FastMath.atan2(_startPointY[i] ,_startPointX[i]);
+				x1[i]=(int)(_m1[i]*FastMath.cos(theta));
+				y1[i]=(int)(_m1[i]*FastMath.sin(theta));
+				theta=_theta+ FastMath.atan2(_endPointY[i], _endPointX[i]);
+				x2[i]=(int)(_m2[i]*FastMath.cos(theta));
+				y2[i]=(int)(_m2[i]*FastMath.sin(theta));
 			}
 			// Finds the rectangle that comprises the organism
 			left = Utils.min(left, x1[i]+ _dCenterX, x2[i]+ _dCenterX);
@@ -1135,10 +1137,10 @@ public class Organism extends Rectangle {
 			double I = _I;
 			symmetric();
 			// Cynetic energy is constant. If mass changes, speed must also change.
-			m = Math.sqrt(m/_mass);
+			m = FastMath.sqrt(m/_mass);
 			dx *= m;
 			dy *= m;
-			dtheta *= Math.sqrt(I/_I);
+			dtheta *= FastMath.sqrt(I/_I);
 			hasGrown = 1;
 		} else {
 			if (_growthRatio < 15 && _energy < _mass/12) {
@@ -1147,10 +1149,10 @@ public class Organism extends Rectangle {
 				double I = _I;
 				symmetric();
 				// Cynetic energy is constant. If mass changes, speed must also change.
-				m = Math.sqrt(m/_mass);
+				m = FastMath.sqrt(m/_mass);
 				dx *= m;
 				dy *= m;
-				dtheta *= Math.sqrt(I/_I);
+				dtheta *= FastMath.sqrt(I/_I);
 				hasGrown = -1;
 			} else
 				hasGrown = 0;
@@ -1207,6 +1209,31 @@ public class Organism extends Rectangle {
 			}
 		}
 	}
+
+	public double[] movePreProcessing() {
+        hasMoved = false;
+        lastFrame.setBounds(this);
+        if (FastMath.abs(dx) < Utils.tol) dx = 0;
+        if (FastMath.abs(dy) < Utils.tol) dy = 0;
+        if (FastMath.abs(dtheta) < Utils.tol) dtheta = 0;
+        // Apply segment effects for this frame.
+        segmentsFrameEffects();
+        // Apply rubbing effects
+        rubbingFramesEffects();
+        // Check if it can grow or shrink
+        grow();
+        // Movement
+        double dxbak=dx, dybak=dy, dthetabak=dtheta;
+        offset(dx,dy,dtheta);
+        calculateBounds(hasGrown!=0);
+
+        double[] returnValues = new double[3];
+        returnValues[0] = dxbak;
+        returnValues[1] = dybak;
+        returnValues[2] = dthetabak;
+        return returnValues;
+    }
+
 	/**
 	 * Executes the organism's movement for this frame.
 	 * This includes segments upkeep and activation,
@@ -1214,22 +1241,10 @@ public class Organism extends Rectangle {
 	 * respiration and death.
 	 */
 	public boolean move() {
-		boolean collision = false;
-		hasMoved = false;
-		lastFrame.setBounds(this);
-		if (Math.abs(dx) < Utils.tol) dx = 0;
-		if (Math.abs(dy) < Utils.tol) dy = 0;
-		if (Math.abs(dtheta) < Utils.tol) dtheta = 0;
-		// Apply segment effects for this frame.
-		segmentsFrameEffects();
-		// Apply rubbing effects
-		rubbingFramesEffects();
-		// Check if it can grow or shrink
-		grow();
-		// Movement
-		double dxbak=dx, dybak=dy, dthetabak=dtheta;
-		offset(dx,dy,dtheta);
-		calculateBounds(hasGrown!=0);
+	    double[] movePre = movePreProcessing();
+
+        double dxbak=movePre[0], dybak=movePre[1], dthetabak=movePre[2];
+        boolean collision = false;
 		
 		if (hasGrown!=0 || dx!=0 || dy!=0 || dtheta!=0) {
 			hasMoved = true;
@@ -1243,9 +1258,16 @@ public class Organism extends Rectangle {
 						return false;
 				}
 			}
+
 			// Collision detection with other organisms.
-			if (_world.checkHit(this) != null)
-				collision = true;
+            Organism otherOrganism = _world.checkHit(this);
+			if (otherOrganism != null) {
+			    if (this.contact(otherOrganism)) {
+                    collision = true;
+                }
+            }
+
+
 			// If there is a collision, undo movement.
 			if (collision) {
 				hasMoved = false;
@@ -1389,7 +1411,7 @@ public class Organism extends Rectangle {
 		double nx = l.getY1() - l.getY2();
 		double ny = l.getX2() - l.getX1();
 		//Second: normalize, modulus 1
-		double modn = Math.sqrt(nx * nx + ny * ny);
+		double modn = FastMath.sqrt(nx * nx + ny * ny);
 		if (modn == 0) {
 			modn = 0.000000000000001;
 		}
@@ -1414,8 +1436,8 @@ public class Organism extends Rectangle {
 		}
 		// This is the j in the parallel axis theorem
 		double j = (-(1+Utils.ELASTICITY) * (vab1x * nx + vab1y * ny)) / 
-			(1/_mass + 1/org._mass + Math.pow(rapx * ny - rapy * nx, 2) / _I +
-					Math.pow(rbpx * ny - rbpy * nx, 2) / org._I);
+			(1/_mass + 1/org._mass + FastMath.pow(rapx * ny - rapy * nx, 2) / _I +
+                    FastMath.pow(rbpx * ny - rbpy * nx, 2) / org._I);
 		// Final speed
 		dx = Utils.between(dx + j*nx/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 		dy = Utils.between(dy + j*ny/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
@@ -1545,19 +1567,19 @@ public class Organism extends Rectangle {
 							    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 								    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 								    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-								    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+								    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 			                    }} else 
 			                    if (_segfriendReaction[seg] == 1) {
 			                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 								    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 								    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-								    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+								    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 			                    }} else
 			                    if (_segfriendReaction[seg] == 2) {
 			                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 									dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 									dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-									dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+									dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 				                }} else
 			    	            break;	                    
 						  }
@@ -1718,19 +1740,19 @@ public class Organism extends Rectangle {
 					    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else 
 	                    if (_segsickReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segsickReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {	                    
 							dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 							dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-							dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+							dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 		                }} else
 	    	            break;	                    
 				  }
@@ -1748,19 +1770,19 @@ public class Organism extends Rectangle {
                   	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else 
 	                    if (_segredReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segredReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {	                    
 	  						dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	  						dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	  						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	  						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 		                }} else
 	    	            break;	                    
                   case GREEN:
@@ -1781,19 +1803,19 @@ public class Organism extends Rectangle {
                         if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 					        dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 					        dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-					        dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+					        dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else   
 	                    if (_seggreenReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {	                    
 					        dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 					        dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-					        dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+					        dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_seggreenReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	  	                }} else
 	    	            break;    
                   case BLUE:
@@ -1807,19 +1829,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else 
   	                    if (_segblueReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segblueReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	    	            break;
                   case WHITE:
@@ -1836,19 +1858,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segwhiteReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segwhiteReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	    	            break;
                 	  } else if ((org._isfrozen) || (org._isplague) || (org._isenhanced) || (org._isaconsumer)) {
@@ -1862,19 +1884,19 @@ public class Organism extends Rectangle {
                         if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
         					dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
         					dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-        					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+        					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
       	                }} else
       	                if (_segplagueReaction[seg] == 1) {
       	                if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
         					dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
         					dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-        					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+        					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
       	                }} else
       	                if (_segplagueReaction[seg] == 2) {
       	                if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
       	    			    dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
       	    				dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-      	    				dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+      	    				dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
       	  	            }} else
       	    	        break;
                 	  } else {
@@ -1888,19 +1910,19 @@ public class Organism extends Rectangle {
                       	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
       						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
       						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-      						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+      						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
     	                }} else
     	                if (_segvirusReaction[seg] == 1) {
     	                if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
       						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
       						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-      						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+      						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
     	                }} else
     	                if (_segvirusReaction[seg] == 2) {
     	                if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     	    			    dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     	    				dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    	    				dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    	    				dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
     	  	            }} else
     	    	        break;
                 	  }
@@ -1917,19 +1939,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segsilverReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segsilverReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	    	            break;
                 	  } else if (org._isaplant) {
@@ -1943,19 +1965,19 @@ public class Organism extends Rectangle {
                         if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
         					dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
         					dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-        					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+        					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
       	                }} else
       	                if (_segwhiteReaction[seg] == 1) {
       	                if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
         					dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
         					dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-        					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+        					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
       	                }} else
       	                if (_segwhiteReaction[seg] == 2) {
       	                if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
       	    			    dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
       	    				dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-      	    				dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+      	    				dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
       	  	            }} else
       	    	        break;
                 	  } else {
@@ -1969,19 +1991,19 @@ public class Organism extends Rectangle {
                       	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
       						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
       						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-      						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+      						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
     	                }} else
     	                if (_segplagueReaction[seg] == 1) {
     	                if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
       						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
       						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-      						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+      						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
     	                }} else
     	                if (_segplagueReaction[seg] == 2) {
     	                if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     	    			    dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     	    				dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    	    				dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    	    				dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
     	  	            }} else
     	    	        break;
                 	  }
@@ -1997,19 +2019,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else  	                    
   	                    if (_seggrayReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_seggrayReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	     	            break;
                   case MAGENTA:
@@ -2024,19 +2046,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else   	                    
   	                    if (_segmagentaReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segmagentaReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	     	            break;
                   case PINK:
@@ -2050,19 +2072,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else   	                    
   	                    if (_segpinkReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segpinkReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case ORANGE:
@@ -2076,19 +2098,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else 
   	                    if (_segorangeReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segorangeReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case BARK:
@@ -2103,19 +2125,19 @@ public class Organism extends Rectangle {
                   	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else 
 	                    if (_segbarkReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segbarkReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	  	                }} else
 	                    break;
                   case VIOLET:
@@ -2129,19 +2151,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segvioletReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segvioletReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case MAROON:
@@ -2155,19 +2177,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segmaroonReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segmaroonReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case OLIVE:
@@ -2181,19 +2203,19 @@ public class Organism extends Rectangle {
               	        if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else 
 	                    if (_segoliveReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segoliveReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 							dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 							dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-							dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+							dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 		                }} else
 	                    break;
                   case MINT:
@@ -2207,19 +2229,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segmintReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segmintReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case CREAM:
@@ -2233,19 +2255,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segcreamReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segcreamReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case SPIKEPOINT:
@@ -2259,19 +2281,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segspikepointReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segspikepointReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case SPIKE:
@@ -2285,19 +2307,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segspikeReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segspikeReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case DARKOLIVE:
@@ -2312,19 +2334,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else 
   	                    if (_seglightblueReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_seglightblueReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case OCHRE:
@@ -2338,19 +2360,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else 
   	                    if (_segochreReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segochreReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   case SKY:
@@ -2365,19 +2387,19 @@ public class Organism extends Rectangle {
                 	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else 
 	                    if (_segskyReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segskyReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 							dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 							dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-							dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+							dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 		                }} else
 	                    break;
                   case ICE:
@@ -2392,19 +2414,19 @@ public class Organism extends Rectangle {
                 	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segiceReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segiceReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	  	                }} else
 	                    break;
                   case LILAC:
@@ -2419,19 +2441,19 @@ public class Organism extends Rectangle {
                 	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else 
 	                    if (_seglilacReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_seglilacReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 							dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 							dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-							dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+							dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 		                }} else
 	                    break;
                   case CORAL:
@@ -2445,19 +2467,19 @@ public class Organism extends Rectangle {
                   	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segcoralReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segcoralReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	  	                }} else
 	                    break;
                   case FIRE:
@@ -2471,19 +2493,19 @@ public class Organism extends Rectangle {
                 	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else 
 	                    if (_segfireReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segfireReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 	  						dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	  						dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	  						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	  						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 		                }} else
 	                    break;
                   case LIGHTBROWN:
@@ -2498,19 +2520,19 @@ public class Organism extends Rectangle {
                 	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_seglightbrownReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_seglightbrownReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	  	                }} else
 	                    break;
                   case GREENBROWN:
@@ -2525,19 +2547,19 @@ public class Organism extends Rectangle {
                 	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_seggreenbrownReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_seggreenbrownReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	  	                }} else
 	                    break;
                   case BROWN:
@@ -2551,19 +2573,19 @@ public class Organism extends Rectangle {
                     	if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segbrownReaction[seg] == 1) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
     						dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
     						dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+    						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	                    }} else
   	                    if (_segbrownReaction[seg] == 2) {
   	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
   	  	                }} else
   	                    break;
                   default:
@@ -2577,19 +2599,19 @@ public class Organism extends Rectangle {
                   	    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   						    dx=Utils.between((x1[seg]-x2[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   						    dy=Utils.between((y1[seg]-y2[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else 
 	                    if (_segdefaultReaction[seg] == 1) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
   						    dx=Utils.between((x2[seg]-x1[seg])*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
   						    dy=Utils.between((y2[seg]-y1[seg])*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+  						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	                    }} else
 	                    if (_segdefaultReaction[seg] == 2) {
 	                    if (Utils.random.nextInt(2)<1 && useEnergy(Utils.TEAL_ENERGY_CONSUMPTION)) {
 	    					dx=Utils.between((org._dCenterX-_dCenterX)*(_m[i]*_m[i]/_mass)+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 	    					dy=Utils.between((org._dCenterY-_dCenterY)*(_m[i]*_m[i]/_mass)+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+	    					dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 	  	                }} else
 	    	            break;
                   }
@@ -2622,7 +2644,7 @@ public class Organism extends Rectangle {
 				} else {
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 				    	// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in orange
@@ -2637,7 +2659,7 @@ public class Organism extends Rectangle {
 				} else {
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 				    	// Get energy depending on segment length
-						takenEnergy = Utils.between((0.5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((0.5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in green brown
 						org.setColor(Utils.ColorGREENBROWN);
 						// This organism will be shown in orange
@@ -2648,7 +2670,7 @@ public class Organism extends Rectangle {
 			case BLUE:
 				if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 					if (org._isenhanced) {
-					    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+					    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 						setColor(Utils.ColorDARKLILAC);
 					} else {
 					    setColor(Color.ORANGE);
@@ -2658,7 +2680,7 @@ public class Organism extends Rectangle {
 					// Doesn't have energy to use the shield
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in orange
@@ -2674,7 +2696,7 @@ public class Organism extends Rectangle {
 					// Doesn't have energy to use the shield
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in orange
@@ -2691,7 +2713,7 @@ public class Organism extends Rectangle {
 					// Doesn't have energy to use the shield
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in orange
@@ -2706,7 +2728,7 @@ public class Organism extends Rectangle {
 			case ORANGE:
 				if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 					// Get energy depending on segment length
-					takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					// The other organism will be shown in orange
 					org.setColor(Color.ORANGE);
 					// This organism will be shown in orange
@@ -2716,7 +2738,7 @@ public class Organism extends Rectangle {
 			case FIRE:
 				if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 					// Get energy depending on segment length
-					takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					// The other organism will be shown in fire
 					org.setColor(Utils.ColorFIRE);
 					// This organism will be shown in orange
@@ -2727,7 +2749,7 @@ public class Organism extends Rectangle {
             	if ((org._nTotalKills > 0) || (org._isenhanced)) {
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in gold
 						org.setColor(Utils.ColorGOLD);
 						// This organism will be shown in orange
@@ -2736,7 +2758,7 @@ public class Organism extends Rectangle {
 				} else {
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in orange
@@ -2756,7 +2778,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 					    	// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in orange
@@ -2769,7 +2791,7 @@ public class Organism extends Rectangle {
 				if ((org._isaplant) || (org._isaconsumer) || (org._isplague) || (org._isenhanced) || (org._isfrozen)) {			    
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in orange
@@ -2782,7 +2804,7 @@ public class Organism extends Rectangle {
 				if ((_isafreezer) || (_isenhanced)) {
 					if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in orange
@@ -2814,7 +2836,7 @@ public class Organism extends Rectangle {
 			default:
 				if (useEnergy(Utils.ORANGE_ENERGY_CONSUMPTION)) {
 					// Get energy depending on segment length
-					takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					// The other organism will be shown in yellow
 					org.setColor(Color.YELLOW);
 					// This organism will be shown in orange
@@ -2849,7 +2871,7 @@ public class Organism extends Rectangle {
 					if (org._isaconsumer) {
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in fire
@@ -2862,7 +2884,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 								org.setColor(Color.YELLOW);
 								// This organism will be shown in dark fire
@@ -2875,7 +2897,7 @@ public class Organism extends Rectangle {
 					if (org._isaconsumer) {
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in green brown
 							org.setColor(Utils.ColorGREENBROWN);
 							// This organism will be shown in fire
@@ -2888,7 +2910,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((0.1 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((0.1 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in green brown
 								org.setColor(Utils.ColorGREENBROWN);
 								// This organism will be shown in dark fire
@@ -2900,7 +2922,7 @@ public class Organism extends Rectangle {
 				case BLUE:
 					if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 						if (org._isenhanced) {
-						    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+						    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 							setColor(Utils.ColorDARKLILAC);
 						} else {
 							setColor(Utils.ColorDARKFIRE);
@@ -2910,7 +2932,7 @@ public class Organism extends Rectangle {
 						// Doesn't have energy to use the shield
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in dark fire
@@ -2926,7 +2948,7 @@ public class Organism extends Rectangle {
 						// Doesn't have energy to use the shield
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in dark fire
@@ -2943,7 +2965,7 @@ public class Organism extends Rectangle {
 						// Doesn't have energy to use the shield
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in dark fire
@@ -2958,7 +2980,7 @@ public class Organism extends Rectangle {
 	            case RED:
 	            	if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in red
 						org.setColor(Color.RED);
 						// This organism will be shown in fire
@@ -2968,7 +2990,7 @@ public class Organism extends Rectangle {
 	            case FIRE:
 	            	if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in fire
 						org.setColor(Utils.ColorFIRE);
 						// This organism will be shown in fire
@@ -2978,7 +3000,7 @@ public class Organism extends Rectangle {
 	            case ORANGE:
 	            	if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in orange
 						org.setColor(Color.ORANGE);
 						// This organism will be shown in fire
@@ -2989,7 +3011,7 @@ public class Organism extends Rectangle {
 	            	if ((org._nTotalKills > 0) || (org._isenhanced)) {
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in gold
 							org.setColor(Utils.ColorGOLD);
 							// This organism will be shown in fire
@@ -2999,7 +3021,7 @@ public class Organism extends Rectangle {
 						if (org._isaconsumer) {
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in fire
@@ -3008,7 +3030,7 @@ public class Organism extends Rectangle {
 					} else  
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in dark fire
@@ -3019,7 +3041,7 @@ public class Organism extends Rectangle {
 	            	if (org._geneticCode.getModifiespink()) {
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in fire
@@ -3028,7 +3050,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in dark fire
@@ -3040,7 +3062,7 @@ public class Organism extends Rectangle {
 				case CREAM:
 					if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in dark fire
@@ -3051,7 +3073,7 @@ public class Organism extends Rectangle {
 				case DEADBARK:
 					if ((_isafreezer) && (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION))) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in fire
@@ -3078,7 +3100,7 @@ public class Organism extends Rectangle {
 						if (org._isaconsumer) {
 							if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 								org.setColor(Color.YELLOW);
 								// This organism will be shown in fire
@@ -3087,7 +3109,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 								org.setColor(Color.YELLOW);
 								// This organism will be shown in dark fire
@@ -3105,7 +3127,7 @@ public class Organism extends Rectangle {
 						if (org._isaconsumer) {
 							if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 								org.setColor(Color.YELLOW);
 								// This organism will be shown in fire
@@ -3118,7 +3140,7 @@ public class Organism extends Rectangle {
 							} else {
 								if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 									// Get energy depending on segment length
-									takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+									takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 									// The other organism will be shown in yellow
 									org.setColor(Color.YELLOW);
 									// This organism will be shown in dark fire
@@ -3132,7 +3154,7 @@ public class Organism extends Rectangle {
 					if (org._isaconsumer) {
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in fire
@@ -3141,7 +3163,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.FIRE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in dark fire
@@ -3162,7 +3184,7 @@ public class Organism extends Rectangle {
 				case RED:
 					if (useEnergy(Utils.RED_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in red
 						org.setColor(Color.RED);
 						// This organism will be shown in red
@@ -3172,7 +3194,7 @@ public class Organism extends Rectangle {
 				case FIRE:
 					if (useEnergy(Utils.RED_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in fire
 						org.setColor(Utils.ColorFIRE);
 						// This organism will be shown in red
@@ -3184,7 +3206,7 @@ public class Organism extends Rectangle {
 				case PINK:
 					if (useEnergy(Utils.RED_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in red
@@ -3195,7 +3217,7 @@ public class Organism extends Rectangle {
 					if ((org._nTotalKills > 0) || (org._isenhanced)) {
 						if (useEnergy(Utils.RED_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in gold
 							org.setColor(Utils.ColorGOLD);
 							// This organism will be shown in red
@@ -3206,7 +3228,7 @@ public class Organism extends Rectangle {
 				case SPIKE:
 					if ((org._isenhanced) && (useEnergy(Utils.RED_ENERGY_CONSUMPTION))) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in red
@@ -3216,7 +3238,7 @@ public class Organism extends Rectangle {
 				case SPIKEPOINT:
 					if ((_isenhanced) && (org._isenhanced) && (useEnergy(Utils.RED_ENERGY_CONSUMPTION))) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in red
@@ -3228,7 +3250,7 @@ public class Organism extends Rectangle {
 				case GRAY:
 					if ((_isenhanced) && (org._isaconsumer) && (useEnergy(Utils.RED_ENERGY_CONSUMPTION))) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in dark fire
@@ -3238,7 +3260,7 @@ public class Organism extends Rectangle {
 				case CREAM:
 					if ((_isenhanced) && (useEnergy(Utils.RED_ENERGY_CONSUMPTION))) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in dark fire
@@ -3265,7 +3287,7 @@ public class Organism extends Rectangle {
 						if (org._geneticCode.getModifiespink()) {
 							if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in pink
 							    org.setColor(Color.PINK);
 								// This organism will be shown in pink
@@ -3274,7 +3296,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in dark fire
 								org.setColor(Utils.ColorDARKFIRE);
 								// This organism will be shown in pink
@@ -3285,7 +3307,7 @@ public class Organism extends Rectangle {
 						if (org._geneticCode.getModifiespink()) {
 							if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in pink
 							    org.setColor(Color.PINK);
 								// This organism will be shown in dark fire
@@ -3294,7 +3316,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in dark fire
 								org.setColor(Utils.ColorDARKFIRE);
 								// This organism will be shown in dark fire
@@ -3307,7 +3329,7 @@ public class Organism extends Rectangle {
 					if (_geneticCode.getModifiespink()) {
 						if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in pink
@@ -3316,7 +3338,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.2 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.2 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in dark fire
@@ -3329,7 +3351,7 @@ public class Organism extends Rectangle {
 						if ((org._nTotalKills > 0) || (org._isenhanced)) {
 							if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in gold
 								org.setColor(Utils.ColorGOLD);
 								// This organism will be shown in pink
@@ -3338,7 +3360,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 								org.setColor(Color.YELLOW);
 								// This organism will be shown in pink
@@ -3362,7 +3384,7 @@ public class Organism extends Rectangle {
 				case DEADBARK:
 					if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in pink
@@ -3373,7 +3395,7 @@ public class Organism extends Rectangle {
 					if ((_isakiller < 2) || (_geneticCode.getModifiespink())) {
 					    if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length
-						    takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in pink
@@ -3386,11 +3408,11 @@ public class Organism extends Rectangle {
 						if (useEnergy(Utils.PINK_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length
 							if (org._isenhanced) {
-								takenEnergy = Utils.between((0.1 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((0.1 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in green brown
 								org.setColor(Utils.ColorGREENBROWN);
 							} else {
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 							    org.setColor(Color.YELLOW);
 							}
@@ -3418,7 +3440,7 @@ public class Organism extends Rectangle {
 					if (org._isaplant) {
 					    if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 					    	if (org._isenhanced) {
-							    useEnergy(Utils.between((0.1 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+							    useEnergy(Utils.between((0.1 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 								setColor(Utils.ColorDARKLILAC);
 							} else {
 								setColor(Utils.ColorMAROON);
@@ -3428,7 +3450,7 @@ public class Organism extends Rectangle {
 							// Doesn't have energy to use the shield
 							if (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 								org.setColor(Color.YELLOW);
 								// This organism will be shown in maroon
@@ -3449,7 +3471,7 @@ public class Organism extends Rectangle {
 					if (org._isaplant) {
 						if (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION)) { 
 						    // Get energy depending on segment length
-						    takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in maroon
@@ -3461,11 +3483,11 @@ public class Organism extends Rectangle {
 					if (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION)) { 
 					    // Get energy depending on segment length
 						if (org._isenhanced) {
-							takenEnergy = Utils.between((0.1 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.1 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in green brown
 							org.setColor(Utils.ColorGREENBROWN);
 						} else {
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						}
@@ -3488,7 +3510,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in maroon
@@ -3503,7 +3525,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((0.5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((0.5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in green brown
 							org.setColor(Utils.ColorGREENBROWN);
 							// This organism will be shown in maroon
@@ -3526,7 +3548,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 								org.setColor(Color.YELLOW);
 								// This organism will be shown in maroon
@@ -3539,7 +3561,7 @@ public class Organism extends Rectangle {
 				case DEADBARK:
 					if ((_isafreezer) && (org._isaplant) && (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION))) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in maroon
@@ -3576,7 +3598,7 @@ public class Organism extends Rectangle {
 						} else {
 						if ((org._isaplant) && (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION))) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in maroon
@@ -3597,7 +3619,7 @@ public class Organism extends Rectangle {
 							} else {
 								if (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION)) {
 									// Get energy depending on segment length
-									takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+									takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 									// The other organism will be shown in yellow
 									org.setColor(Color.YELLOW);
 									// This organism will be shown in maroon
@@ -3610,7 +3632,7 @@ public class Organism extends Rectangle {
 				default:
 					if ((_isenhanced) && (org._isaplant) && (useEnergy(Utils.MAROON_ENERGY_CONSUMPTION))) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in yellow
 						org.setColor(Color.YELLOW);
 						// This organism will be shown in maroon
@@ -3658,7 +3680,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.LILAC_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((10 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((10 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in dark lilac
 							org.setColor(Utils.ColorDARKLILAC);
 							// This organism will be shown in lilac
@@ -3679,7 +3701,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.LILAC_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in dark lilac
 							org.setColor(Utils.ColorDARKLILAC);
 						    // This organism will be shown in lilac
@@ -3695,7 +3717,7 @@ public class Organism extends Rectangle {
 		    case BLUE:
 				if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 					if (org._isenhanced) {
-					    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+					    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 						setColor(Utils.ColorDARKLILAC);
 					} else {
 						setColor(Utils.ColorLILAC);
@@ -3705,7 +3727,7 @@ public class Organism extends Rectangle {
 					// Doesn't have energy to use the shield
 					if (useEnergy(Utils.LILAC_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((10 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((10 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in dark lilac
 						org.setColor(Utils.ColorDARKLILAC);
 						// This organism will be shown in lilac
@@ -3724,7 +3746,7 @@ public class Organism extends Rectangle {
 		    	if ((_geneticCode.getModifieslilac()) || ((org._isaconsumer) && (org.alive))) {
 		    		if (useEnergy(Utils.LILAC_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((10 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((10 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in dark lilac
 						org.setColor(Utils.ColorDARKLILAC);
 						// This organism will be shown in lilac
@@ -3742,7 +3764,7 @@ public class Organism extends Rectangle {
 				} else {
 					if (useEnergy(Utils.LILAC_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((10 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((10 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in dark lilac
 						org.setColor(Utils.ColorDARKLILAC);
 						// This organism will be shown in lilac
@@ -3760,7 +3782,7 @@ public class Organism extends Rectangle {
 				} else {
 					if (useEnergy(Utils.LILAC_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((10 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((10 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in dark lilac
 						org.setColor(Utils.ColorDARKLILAC);
 						// This organism will be shown in lilac
@@ -3784,7 +3806,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.LILAC_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((10 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((10 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in dark lilac
 							org.setColor(Utils.ColorDARKLILAC);
 							// This organism will be shown in lilac
@@ -3805,7 +3827,7 @@ public class Organism extends Rectangle {
 		    default:
 		    	if (useEnergy(Utils.LILAC_ENERGY_CONSUMPTION)) {
 					// Get energy depending on segment length
-					takenEnergy = Utils.between((10 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					takenEnergy = Utils.between((10 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					// The other organism will be shown in dark lilac
 					org.setColor(Utils.ColorDARKLILAC);
 					// This organism will be shown in lilac
@@ -3847,7 +3869,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.DARKGRAY_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length
-						    takenEnergy = Utils.between((0.75 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between((0.75 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in spike
@@ -3861,7 +3883,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.SPIKE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in dark lilac
 						    org.setColor(Utils.ColorDARKLILAC);
 						    // This organism will be shown in spike
@@ -3878,7 +3900,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.DARKGRAY_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length
-						    takenEnergy = Utils.between((0.375 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between((0.375 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in green brown
 						    org.setColor(Utils.ColorGREENBROWN);
 						    // This organism will be shown in spike
@@ -3892,7 +3914,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.SPIKE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((2.5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((2.5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in dark lilac
 						    org.setColor(Utils.ColorDARKLILAC);
 						    // This organism will be shown in spike
@@ -3904,7 +3926,7 @@ public class Organism extends Rectangle {
 			case BLUE:
 				if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 					if (org._isenhanced) {
-					    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+					    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 						setColor(Utils.ColorDARKLILAC);
 					} else {
 						setColor(Utils.ColorSPIKE);
@@ -3915,7 +3937,7 @@ public class Organism extends Rectangle {
 					if (_isenhanced) {
 						if (useEnergy(Utils.DARKGRAY_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length
-						    takenEnergy = Utils.between((0.75 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between((0.75 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in spike
@@ -3924,7 +3946,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.SPIKE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in dark lilac
 						    org.setColor(Utils.ColorDARKLILAC);
 						    // This organism will be shown in spike
@@ -3943,7 +3965,7 @@ public class Organism extends Rectangle {
 					if (_isenhanced) {
 						if (useEnergy(Utils.DARKGRAY_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length
-						    takenEnergy = Utils.between((0.75 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between((0.75 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in spike
@@ -3952,7 +3974,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.SPIKE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in dark lilac
 						    org.setColor(Utils.ColorDARKLILAC);
 						    // This organism will be shown in spike
@@ -3972,7 +3994,7 @@ public class Organism extends Rectangle {
 					if (_isenhanced) {
 						if (useEnergy(Utils.DARKGRAY_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length
-						    takenEnergy = Utils.between((0.75 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between((0.75 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in spike
@@ -3981,7 +4003,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.SPIKE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length
-							takenEnergy = Utils.between((5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between((5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in dark lilac
 						    org.setColor(Utils.ColorDARKLILAC);
 						    // This organism will be shown in spike
@@ -4003,7 +4025,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.DARKGRAY_ENERGY_CONSUMPTION)) {
 							    // Get energy depending on segment length
-							    takenEnergy = Utils.between((0.75 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							    takenEnergy = Utils.between((0.75 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							    // The other organism will be shown in yellow
 							    org.setColor(Color.YELLOW);
 							    // This organism will be shown in spike
@@ -4017,7 +4039,7 @@ public class Organism extends Rectangle {
 						} else {
 							if (useEnergy(Utils.SPIKE_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length
-								takenEnergy = Utils.between((5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between((5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in dark lilac
 							    org.setColor(Utils.ColorDARKLILAC);
 							    // This organism will be shown in spike
@@ -4032,7 +4054,7 @@ public class Organism extends Rectangle {
 		    		if ((org._isaplant) || (org._isaconsumer) || (org._isplague) || (org._isenhanced) || (org._isfrozen)) {
 		    			if (useEnergy(Utils.DARKGRAY_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length
-						    takenEnergy = Utils.between((0.75 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between((0.75 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in spike
@@ -4042,7 +4064,7 @@ public class Organism extends Rectangle {
 				} else {
 					if (useEnergy(Utils.SPIKE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in dark lilac
 					    org.setColor(Utils.ColorDARKLILAC);
 					    // This organism will be shown in spike
@@ -4067,7 +4089,7 @@ public class Organism extends Rectangle {
 				if (_isenhanced) {
 					if (useEnergy(Utils.DARKGRAY_ENERGY_CONSUMPTION)) {
 					    // Get energy depending on segment length
-					    takenEnergy = Utils.between((0.75 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					    takenEnergy = Utils.between((0.75 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					    // The other organism will be shown in yellow
 					    org.setColor(Color.YELLOW);
 					    // This organism will be shown in spike
@@ -4076,7 +4098,7 @@ public class Organism extends Rectangle {
 				} else {
 					if (useEnergy(Utils.SPIKE_ENERGY_CONSUMPTION)) {
 						// Get energy depending on segment length
-						takenEnergy = Utils.between((5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						takenEnergy = Utils.between((5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						// The other organism will be shown in dark lilac
 					    org.setColor(Utils.ColorDARKLILAC);
 					    // This organism will be shown in spike
@@ -4113,7 +4135,7 @@ public class Organism extends Rectangle {
 						org.dy=Utils.between((org._dCenterY-_dCenterY)*_m[seg]*_m[seg]*_m[seg]/org._mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						org.dtheta=0;
 						if (_isenhanced) {
-							org.useEnergy(Utils.between((Math.abs(org.dx) + Math.abs(org.dy)) * (Utils.ORGANIC_OBTAINED_ENERGY/14), 0, org._energy));
+							org.useEnergy(Utils.between((FastMath.abs(org.dx) + FastMath.abs(org.dy)) * (Utils.ORGANIC_OBTAINED_ENERGY/14), 0, org._energy));
 							org.setColor(Utils.ColorDARKLILAC);
 						}
 						setColor(Utils.ColorOCHRE);
@@ -4129,7 +4151,7 @@ public class Organism extends Rectangle {
 					org.dy=Utils.between((org._dCenterY-_dCenterY)*_m[seg]*_m[seg]*_m[seg]/org._mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 					org.dtheta=0;
 					if (_isenhanced) {
-						org.useEnergy(Utils.between((Math.abs(org.dx) + Math.abs(org.dy)) * (Utils.ORGANIC_OBTAINED_ENERGY/140), 0, org._energy));
+						org.useEnergy(Utils.between((FastMath.abs(org.dx) + FastMath.abs(org.dy)) * (Utils.ORGANIC_OBTAINED_ENERGY/140), 0, org._energy));
 						org.setColor(Utils.ColorDARKLILAC);
 					}
 					setColor(Utils.ColorOCHRE);
@@ -4144,7 +4166,7 @@ public class Organism extends Rectangle {
 					org.dy=Utils.between((org._dCenterY-_dCenterY)*_m[seg]*_m[seg]*_m[seg]/org._mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 					org.dtheta=0;
 					if (_isenhanced) {
-						org.useEnergy(Utils.between((Math.abs(org.dx) + Math.abs(org.dy)) * (Utils.ORGANIC_OBTAINED_ENERGY/14), 0, org._energy));
+						org.useEnergy(Utils.between((FastMath.abs(org.dx) + FastMath.abs(org.dy)) * (Utils.ORGANIC_OBTAINED_ENERGY/14), 0, org._energy));
 						org.setColor(Utils.ColorDARKLILAC);
 					}
 					setColor(Utils.ColorOCHRE);
@@ -4248,7 +4270,7 @@ public class Organism extends Rectangle {
 					if ((org._isaplant) || (org._isaconsumer)) {
 				        if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 				        	if (org._isenhanced) {
-							    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+							    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 								setColor(Utils.ColorDARKLILAC);
 							} else {
 								setColor(Color.WHITE);
@@ -4752,7 +4774,7 @@ public class Organism extends Rectangle {
 					if ((!_geneticCode.getPlague()) && (org._isaplant)) {
 				        if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 				        	if (org._isenhanced) {
-							    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+							    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 								setColor(Utils.ColorDARKLILAC);
 							} else {
 								setColor(Utils.ColorPLAGUE);
@@ -5125,7 +5147,7 @@ public class Organism extends Rectangle {
 					} else {
 					    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length and relation between kills of both organisms
-							takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in gold
@@ -5159,7 +5181,7 @@ public class Organism extends Rectangle {
 					} else {
 					    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length and relation between kills of both organisms
-							takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in gold
@@ -5182,7 +5204,7 @@ public class Organism extends Rectangle {
 				if ((_nTotalKills > 0) || (_isenhanced)) {
 				    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 					    // Get energy depending on segment length and relation between kills of both organisms
-					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					    // The other organism will be shown in yellow
 					    org.setColor(Color.YELLOW);
 					    // This organism will be shown in gold
@@ -5216,7 +5238,7 @@ public class Organism extends Rectangle {
 					} else {
 					    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length and relation between kills of both organisms
-							takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(0.5 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(0.5 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in green brown
 							org.setColor(Utils.ColorGREENBROWN);
 							// This organism will be shown in gold
@@ -5241,7 +5263,7 @@ public class Organism extends Rectangle {
 			    if ((_nTotalKills > 0) || (_isenhanced)) {
 				    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 					    // Get energy depending on segment length and relation between kills of both organisms
-					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					    // The other organism will be shown in red
 					    org.setColor(Color.RED);
 					    // This organism will be shown in gold
@@ -5265,7 +5287,7 @@ public class Organism extends Rectangle {
 				if ((_nTotalKills > 0) || (_isenhanced)) {
 				    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 					    // Get energy depending on segment length and relation between kills of both organisms
-					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					    // The other organism will be shown in fire
 					    org.setColor(Utils.ColorFIRE);
 					    // This organism will be shown in gold
@@ -5289,7 +5311,7 @@ public class Organism extends Rectangle {
 				if ((_nTotalKills > 0) || (_isenhanced)) {
 				    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 					    // Get energy depending on segment length and relation between kills of both organisms
-					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					    // The other organism will be shown in orange
 					    org.setColor(Color.ORANGE);
 					    // This organism will be shown in gold
@@ -5316,7 +5338,7 @@ public class Organism extends Rectangle {
 					if (_nTotalInfected > 0) {
 						if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length and relation between kills of both organisms
-						    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in pink
 						    org.setColor(Color.PINK);
 						    // This organism will be shown in gold
@@ -5325,7 +5347,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length and relation between kills of both organisms
-						    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in gold
@@ -5363,7 +5385,7 @@ public class Organism extends Rectangle {
 					if ((org._nTotalKills > 0) || (org._isenhanced)) {
 						if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length and relation between kills of both organisms
-						    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in gold
 						    org.setColor(Utils.ColorGOLD);
 						    // This organism will be shown in gold
@@ -5372,7 +5394,7 @@ public class Organism extends Rectangle {
 					} else {
 						if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 						    // Get energy depending on segment length and relation between kills of both organisms
-						    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+						    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 						    // The other organism will be shown in yellow
 						    org.setColor(Color.YELLOW);
 						    // This organism will be shown in gold
@@ -5411,7 +5433,7 @@ public class Organism extends Rectangle {
 					if ((org._isaplant) || (org._isaconsumer) || (org._isplague) || (org._isenhanced) || (org._isfrozen)) {
 						if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 					        // Get energy depending on segment length and relation between kills of both organisms
-					        takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					        takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					        // The other organism will be shown in yellow
 					        org.setColor(Color.YELLOW);
 					        // This organism will be shown in gold
@@ -5438,7 +5460,7 @@ public class Organism extends Rectangle {
 				    } else {
 					    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 							// Get energy depending on segment length and relation between kills of both organisms
-							takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+							takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 							// The other organism will be shown in yellow
 							org.setColor(Color.YELLOW);
 							// This organism will be shown in gold
@@ -5471,7 +5493,7 @@ public class Organism extends Rectangle {
 				if ((_nTotalKills > 0) || (_isenhanced)) {
 				    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 					    // Get energy depending on segment length and relation between kills of both organisms
-					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					    // The other organism will be shown in yellow
 					    org.setColor(Color.YELLOW);
 					    // This organism will be shown in gold
@@ -5498,7 +5520,7 @@ public class Organism extends Rectangle {
 				if ((_nTotalKills > 0) || (_isenhanced)) {
 				    if ((_isafreezer) && (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION))) {
 					    // Get energy depending on segment length and relation between kills of both organisms
-					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					    // The other organism will be shown in yellow
 					    org.setColor(Color.YELLOW);
 					    // This organism will be shown in gold
@@ -5539,7 +5561,7 @@ public class Organism extends Rectangle {
 						} else {
 						    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 								// Get energy depending on segment length and relation between kills of both organisms
-								takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+								takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 								// The other organism will be shown in yellow
 								org.setColor(Color.YELLOW);
 								// This organism will be shown in gold
@@ -5623,7 +5645,7 @@ public class Organism extends Rectangle {
 				if ((_nTotalKills > 0) || (_isenhanced)) {
 				    if (useEnergy(Utils.EXPERIENCE_ENERGY_CONSUMPTION)) {
 					    // Get energy depending on segment length and relation between kills of both organisms
-					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+					    takenEnergy = Utils.between(((_nTotalKills+18)/(org._nTotalKills+18))*(FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
 					    // The other organism will be shown in yellow
 					    org.setColor(Color.YELLOW);
 					    // This organism will be shown in gold
@@ -5897,7 +5919,7 @@ public class Organism extends Rectangle {
 			case BLUE:
 				if ((!_isenhanced) && (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION))) {
 					if (org._isenhanced) {
-					    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+					    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 						setColor(Utils.ColorDARKLILAC);
 					} else {
 						setColor(Utils.ColorSKY);
@@ -6115,7 +6137,7 @@ public class Organism extends Rectangle {
 			case BLUE:
 				if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 					if (org._isenhanced) {
-					    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+					    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 						setColor(Utils.ColorDARKLILAC);
 					} else {
 						setColor(Color.GRAY);
@@ -6297,7 +6319,7 @@ public class Organism extends Rectangle {
 			case BLUE:
 				if (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION)) {
 					if (org._isenhanced) {
-					    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+					    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
 						setColor(Utils.ColorDARKLILAC);
 					} else {
 						setColor(Utils.ColorVIOLET);
@@ -6754,7 +6776,7 @@ public class Organism extends Rectangle {
             } else {
                 if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
                     // Get energy depending on segment length
-                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                     // The other organism will be shown in green brown
                     org.setColor(Utils.ColorGREENBROWN);
                     // This organism will be shown in cream
@@ -6765,7 +6787,7 @@ public class Organism extends Rectangle {
         case BLUE:
             if (((!_isenhanced) || (_geneticCode.getModifiescream())) && (org.useEnergy(Utils.BLUE_ENERGY_CONSUMPTION))) {
                 if (org._isenhanced) {
-                    useEnergy(Utils.between((0.5 * Math.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
+                    useEnergy(Utils.between((0.5 * FastMath.log10(org._m[oseg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, _energy));
                     setColor(Utils.ColorDARKLILAC);
                 } else {
                     setColor(Utils.ColorCREAM);
@@ -6774,7 +6796,7 @@ public class Organism extends Rectangle {
             } else {
                 if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
                     // Get energy depending on segment length
-                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                     // The other organism will be shown in green brown
                     org.setColor(Utils.ColorGREENBROWN);
                     if ((_isenhanced) && (!_geneticCode.getModifiescream())) {
@@ -6792,7 +6814,7 @@ public class Organism extends Rectangle {
         case OLDBARK:
             if ((_isenhanced) && (!_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
                 // Get energy depending on segment length
-                takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                 // The other organism will be shown in green brown
                 org.setColor(Utils.ColorGREENBROWN);
                 // This organism will be shown in dark gray
@@ -6803,7 +6825,7 @@ public class Organism extends Rectangle {
             org._segColor[oseg] = Utils.ColorOLDBARK;
             if ((_isenhanced) && (!_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
                 // Get energy depending on segment length
-                takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                 // The other organism will be shown in green brown
                 org.setColor(Utils.ColorGREENBROWN);
                 // This organism will be shown in dark gray
@@ -6814,7 +6836,7 @@ public class Organism extends Rectangle {
             if ((org._nTotalKills > 0) || (org._isenhanced)) {
                 if ((_isenhanced) && (_geneticCode.getModifiescream()) && (_nTotalKills >= org._nTotalKills) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
                     // Get energy depending on segment length
-                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                     // The other organism will be shown in green brown
                     org.setColor(Utils.ColorGREENBROWN);
                     // This organism will be shown in dark gray
@@ -6823,7 +6845,7 @@ public class Organism extends Rectangle {
             } else {
                 if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
                     // Get energy depending on segment length
-                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                     // The other organism will be shown in green brown
                     org.setColor(Utils.ColorGREENBROWN);
                     // This organism will be shown in cream
@@ -6838,7 +6860,7 @@ public class Organism extends Rectangle {
         case PINK:
             if ((_isenhanced) && (_geneticCode.getModifiescream()) && (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION))) {
                 // Get energy depending on segment length
-                takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                 // The other organism will be shown in green brown
                 org.setColor(Utils.ColorGREENBROWN);
                 // This organism will be shown in dark gray
@@ -6849,7 +6871,7 @@ public class Organism extends Rectangle {
             if ((org._isaplant) || (org._isaconsumer) || (org._isplague) || (org._isenhanced) || (org._isfrozen)) {
                 if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
                     // Get energy depending on segment length
-                    takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                    takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                     // The other organism will be shown in green brown
                     org.setColor(Utils.ColorGREENBROWN);
                     // This organism will be shown in cream
@@ -6868,7 +6890,7 @@ public class Organism extends Rectangle {
                 } else {
                     if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
                         // Get energy depending on segment length
-                        takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                        takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                         // The other organism will be shown in green brown
                         org.setColor(Utils.ColorGREENBROWN);
                         // This organism will be shown in cream
@@ -6888,7 +6910,7 @@ public class Organism extends Rectangle {
         default:
             if (useEnergy(Utils.CREAM_ENERGY_CONSUMPTION)) {
                 // Get energy depending on segment length
-                takenEnergy = Utils.between((0.09 * Math.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
+                takenEnergy = Utils.between((0.09 * FastMath.log10(_m[seg])) * Utils.ORGANIC_OBTAINED_ENERGY, 0, org._energy);
                 // The other organism will be shown in green brown
                 org.setColor(Utils.ColorGREENBROWN);
                 // This organism will be shown in cream
@@ -7058,11 +7080,11 @@ public class Organism extends Rectangle {
 	 */
 	private final void rubbingFramesEffects() {
 		dx *= Utils.RUBBING;
-		if (Math.abs(dx) < Utils.tol) dx=0;
+		if (FastMath.abs(dx) < Utils.tol) dx=0;
 		dy *= Utils.RUBBING;
-		if (Math.abs(dy) < Utils.tol) dy = 0;
+		if (FastMath.abs(dy) < Utils.tol) dy = 0;
 		dtheta *= Utils.RUBBING;
-		if (Math.abs(dtheta) < Utils.tol) dtheta = 0;
+		if (FastMath.abs(dtheta) < Utils.tol) dtheta = 0;
 	}
 	
 	/*
@@ -7091,7 +7113,7 @@ public class Organism extends Rectangle {
 					if (Utils.random.nextInt(100)<8 && useEnergy(Utils.CYAN_ENERGY_CONSUMPTION)) {
 						dx=Utils.between(dx+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						dy=Utils.between(dy+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 					}
 					break;
 				case TEAL:
@@ -7104,16 +7126,16 @@ public class Organism extends Rectangle {
 					    if (Utils.random.nextInt(100)<8 && useEnergy(Utils.CYAN_ENERGY_CONSUMPTION)) {
 						    dx=Utils.between(dx+12d*(x2[i]-x1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
 						    dy=Utils.between(dy+12d*(y2[i]-y1[i])/_mass, -Utils.MAX_VEL, Utils.MAX_VEL);
-						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						    dtheta=Utils.between(dtheta+Utils.randomSign()*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 					}
 					break;
 				// Photosynthesis
 				case SPRING:
 					       if (_geneticCode.getClockwise()) {
-						       dtheta=Utils.between(dtheta+0.1*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+						       dtheta=Utils.between(dtheta+0.1*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 						       photosynthesis += Utils.SPRING_ENERGY_CONSUMPTION * _mphoto[i];
 					} else {
-					           dtheta=Utils.between(dtheta-0.1*_m[i]*Math.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
+					           dtheta=Utils.between(dtheta-0.1*_m[i]*FastMath.PI/_I, -Utils.MAX_ROT, Utils.MAX_ROT);
 					           photosynthesis += Utils.SPRING_ENERGY_CONSUMPTION * _mphoto[i];
 					}
 					break;

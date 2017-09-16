@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import javax.imageio.*;
 
+import net.jafama.FastMath;
 import org.xml.sax.SAXException;
 
 import java.awt.image.*;
@@ -138,6 +139,8 @@ public class VisibleWorld extends JPanel {
 	 * visible world.
 	 */
 	protected int mouseY;
+	protected boolean drawingDisabled = false;
+
 	/**
 	 * A reference to the {@link InfoWindow}, that is created from this class.
 	 */
@@ -524,7 +527,9 @@ public class VisibleWorld extends JPanel {
 	@Override
 	public void paintComponent (Graphics g) {
 		super.paintComponent(g);
-		_mainWindow.getWorld().draw(g);
+		if (!drawingDisabled) {
+			_mainWindow.getWorld().draw(g);
+		}
 		if (getSelectedOrganism() != null) {
 			g.setColor(Color.ORANGE);
 			g.drawRect(_selectedOrganism.x, _selectedOrganism.y,

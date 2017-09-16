@@ -17,6 +17,8 @@
  *
  */
 
+import net.jafama.FastMath;
+
 import java.io.*;
 import java.awt.*;
 
@@ -467,7 +469,7 @@ public class Gene implements Cloneable, Serializable {
 	}
 
 	public void randomizeTheta() {
-		_theta = Utils.random.nextDouble() * 2.0 * Math.PI;
+		_theta = Utils.random.nextDouble() * 2.0 * FastMath.PI;
 	}
 
 	/**

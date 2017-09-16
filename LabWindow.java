@@ -21,6 +21,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.jafama.FastMath;
 import org.xml.sax.SAXException;
 
 import java.awt.*;
@@ -1034,7 +1035,7 @@ class ThetaSpinner extends JSpinner {
 	public ThetaSpinner(Gene gene) {
 		super();
 		_gene = gene;
-		int initialValue = (int)Math.round(_gene.getTheta()*180.0/Math.PI);
+		int initialValue = (int)FastMath.round(_gene.getTheta()*180.0/ FastMath.PI);
 		while (initialValue < 0) initialValue+=360;
 		while (initialValue > 359) initialValue-=360;
 		setModel(new ThetaSpinnerModel(initialValue, 0, 359, 1));
@@ -1050,7 +1051,7 @@ class ThetaSpinner extends JSpinner {
 	}
 	
 	public double getTheta() {
-		return ((SpinnerNumberModel)getModel()).getNumber().doubleValue()*Math.PI/180.0;
+		return ((SpinnerNumberModel)getModel()).getNumber().doubleValue()*FastMath.PI/180.0;
 	}
 }
 

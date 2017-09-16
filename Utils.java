@@ -18,6 +18,8 @@
  *
  */
 
+import net.jafama.FastMath;
+
 import java.util.*;
 import java.util.prefs.*;
 import java.awt.*;
@@ -487,7 +489,7 @@ public final class Utils {
 	 * This is the default value for the maximum rotational speed that an organism
 	 * can achieve.
 	 */
-	final static double DEF_MAX_ROT = Math.PI / 16d;
+	final static double DEF_MAX_ROT = FastMath.PI / 16d;
 	/**
 	 * This is the default elasticity coefficient. This value is used to establish
 	 * the energy that a movement keeps after a collision.

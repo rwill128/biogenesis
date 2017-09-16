@@ -26,6 +26,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.index.kdtree.KdNode;
 import com.vividsolutions.jts.index.kdtree.KdTree;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import net.jafama.FastMath;
+import sun.util.resources.cldr.rm.CalendarData_rm_CH;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,6 +62,7 @@ public class World implements Serializable{
 	 * manually synchronize when iterating over it. 
 	 */
 	protected List<Organism> _organisms;
+//	protected List<Organism> _organismsToAdd = new ArrayList<>();
 	/**
 	 * A list of all input biological corridors from where organisms
 	 * of other hosts will arrive.
@@ -481,6 +484,31 @@ public class World implements Serializable{
 			 * remove organisms with no energy, so a ConcurrentModificationException
 			 * will be thrown.
 			 */
+
+//			List<Organism> toRemove = new ArrayList<>();
+//
+//			_organisms.parallelStream().forEach((org) -> {
+//				if (!org.move()) {
+//					// Organism has no energy -> remove from the list
+//					_visibleWorld.repaint(org);
+//					toRemove.add(org);
+//					if (_visibleWorld.getSelectedOrganism() == org)
+//						_visibleWorld.setSelectedOrganism(null);
+//				}
+//			});
+//
+//			for (Organism removed : toRemove) {
+//				if (_organisms.indexOf(removed) >= 0) {
+//					_organisms.remove(_organisms.indexOf(removed));
+//				}
+//			}
+//
+//			for (Organism toAdd : _organismsToAdd) {
+//				_organisms.add(toAdd);
+//			}
+
+//			_organismsToAdd.clear();
+
 			int l = _organisms.size();
 			for (i=0; i<l; i++) {
 				b = _organisms.get(i);
@@ -593,8 +621,7 @@ public class World implements Serializable{
             if (org1 != org) {
                 // Check if they are touching
                 if (org1.intersects(org)) {
-                    if (org1.contact(org))
-                        return org1;
+                    return org;
                 }
             }
         }

@@ -18,6 +18,8 @@
  *
  */
 
+import net.jafama.FastMath;
+
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
@@ -50,6 +52,8 @@ public class MainWindow extends JFrame {
 	protected StdAction decreaseCO2Action;
 	protected StdAction manageConnectionsAction;
 	protected StdAction abortTrackingAction;
+	protected StdAction enableDrawingAction;
+	protected StdAction disableDrawingAction;
 	protected StdAction openGameAction;
 	protected StdAction saveGameAsAction;
 	protected StdAction quitAction;
@@ -165,6 +169,10 @@ public class MainWindow extends JFrame {
 				"T_MANAGE_CONNECTIONS"); //$NON-NLS-1$
 		abortTrackingAction = new AbortTrackingAction("T_ABORT_TRACKING", "images/menu_stop_tracking.png",  //$NON-NLS-1$//$NON-NLS-2$
 				"T_ABORT_TRACKING"); //$NON-NLS-1$
+		enableDrawingAction = new EnableDrawingAction("T_ABORT_TRACKING", "images/menu_stop_tracking.png",  //$NON-NLS-1$//$NON-NLS-2$
+				"T_ABORT_TRACKING"); //$NON-NLS-1$
+		disableDrawingAction = new DisableDrawingAction("T_ABORT_TRACKING", "images/menu_stop_tracking.png",  //$NON-NLS-1$//$NON-NLS-2$
+				"T_ABORT_TRACKING"); //$NON-NLS-1$
 		openGameAction = new OpenGameAction("T_OPEN", null, "T_OPEN_WORLD");  //$NON-NLS-1$//$NON-NLS-2$
 		saveGameAsAction = new SaveGameAsAction("T_SAVE_AS", null, "T_SAVE_WORLD_AS");  //$NON-NLS-1$//$NON-NLS-2$
 		quitAction = new QuitAction("T_QUIT", null, "T_QUIT_PROGRAM"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -189,6 +197,8 @@ public class MainWindow extends JFrame {
 		toolBar.add(decreaseCO2Action);
 		toolBar.add(manageConnectionsAction);
 		toolBar.add(abortTrackingAction);
+		toolBar.add(enableDrawingAction);
+		toolBar.add(disableDrawingAction);
 		abortTrackingAction.setEnabled(_trackedOrganism != null);
 		toolBar.invalidate();
 		toolBar.repaint();
@@ -480,6 +490,28 @@ public class MainWindow extends JFrame {
 		
 		public void actionPerformed(ActionEvent e) {
 			setTrackedOrganism(null);
+		}
+	}
+
+	class DisableDrawingAction extends StdAction {
+		private static final long serialVersionUID = 1L;
+		public DisableDrawingAction(String text, String icon_path, String desc) {
+			super(text, icon_path, desc);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			_visibleWorld.drawingDisabled = true;
+		}
+	}
+
+	class EnableDrawingAction extends StdAction {
+		private static final long serialVersionUID = 1L;
+		public EnableDrawingAction(String text, String icon_path, String desc) {
+			super(text, icon_path, desc);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			_visibleWorld.drawingDisabled = false;
 		}
 	}
 	
@@ -966,7 +998,7 @@ public class MainWindow extends JFrame {
 					long actualTime = System.currentTimeMillis();
 					if (actualTime - lastPaintTime > currentDelay*1.5 || currentDelay < Utils.DELAY) {
 		    			// We can't run so fast
-		    			failedTime=Math.max(failedTime+1, 0);
+		    			failedTime= Math.max(failedTime+1, 0);
 		    			if (failedTime >= 2) {
 		    				failedTime = 0;
 		    				currentDelay*=1.5;
@@ -975,7 +1007,7 @@ public class MainWindow extends JFrame {
 		    		} else {
 		    			if (actualTime - lastPaintTime < currentDelay*1.2 && currentDelay > Utils.DELAY) {
 		    				// We can run faster
-		    				failedTime=Math.min(failedTime-1, 0);
+		    				failedTime= Math.min(failedTime-1, 0);
 		    				if (failedTime <= -10) {
 		    					currentDelay = Math.max(Utils.DELAY, currentDelay-1);
 		    					startLifeProcess(currentDelay);

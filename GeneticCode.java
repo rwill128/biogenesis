@@ -17,6 +17,8 @@
  *
  */
 
+import net.jafama.FastMath;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.*;
@@ -1012,9 +1014,9 @@ public class GeneticCode implements Cloneable, Serializable {
 				if (j==0) {
 					x0[i][j]=y0[i][j]=0;
 					if (_mirror == 0 || i%2==0)
-						v.setTheta(_genes[j].getTheta()+i*2*Math.PI/_symmetry);
+						v.setTheta(_genes[j].getTheta()+i*2* FastMath.PI/_symmetry);
 					else {
-						v.setTheta(_genes[j].getTheta()+(i-1)*2*Math.PI/_symmetry);
+						v.setTheta(_genes[j].getTheta()+(i-1)*2*FastMath.PI/_symmetry);
 						v.invertX();
 					}
 				} else {
@@ -1043,8 +1045,8 @@ public class GeneticCode implements Cloneable, Serializable {
 					}
 				}
 				
-				x1[i][j] = (int) Math.round(v.getX() + x0[i][j]);
-				y1[i][j] = (int) Math.round(v.getY() + y0[i][j]);
+				x1[i][j] = (int) FastMath.round(v.getX() + x0[i][j]);
+				y1[i][j] = (int) FastMath.round(v.getY() + y0[i][j]);
 				
 				maxX = Math.max(maxX, Math.max(x0[i][j], x1[i][j]));
 				maxY = Math.max(maxY, Math.max(y0[i][j], y1[i][j]));
